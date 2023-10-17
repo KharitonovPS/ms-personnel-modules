@@ -1,6 +1,6 @@
 [submodule "http-client-module"]
 	path = http-client-module
-	url = https://github.com/ЛÑKharitonovPS/client-server-application
+	url = https://github.com/KharitonovPS/client-server-application
 [submodule "ms-person-module"]
 	path = ms-person-module
-	url = https://github.com/ЛÑKharitonovPS/client-server-application
+	url = https://github.com/KharitonovPS/client-server-application
