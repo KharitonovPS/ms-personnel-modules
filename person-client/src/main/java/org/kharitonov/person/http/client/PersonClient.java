@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.kharitonov.person.model.dto.PersonDTO;
 
 import java.io.IOException;
@@ -15,9 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @RequiredArgsConstructor
@@ -46,66 +43,6 @@ public class PersonClient {
         String response = sendRequest(request);
         return deserialize(response);
     }
-
-    public List<PersonDTO> filterMultiplyEven() {
-        HttpRequest request = createGetRequest(BASE_URL + "/filterMultiplyEven");
-        String response = sendRequest(request);
-        return deserializeList(response);
-    }
-
-    public List<PersonDTO> sortByAge() {
-        HttpRequest request = createGetRequest(BASE_URL + "/sortByAge");
-        String response = sendRequest(request);
-        return deserializeList(response);
-    }
-
-    public LinkedHashMap<Character, List<PersonDTO>> sortByFirstCharOfName() {
-        HttpRequest request = createGetRequest(BASE_URL + "/sortByFirstCharOfName");
-        String response = sendRequest(request);
-        return deserializeLinkedHashMap(response);
-    }
-
-    public PersonDTO findMaxAge() {
-        HttpRequest request = createGetRequest(BASE_URL + "/findMaxAge");
-        String response = sendRequest(request);
-        return deserialize(response);
-    }
-
-    public List<PersonDTO> skipAndLimitation() {
-        HttpRequest request = createGetRequest(BASE_URL + "/skipAndLimitation");
-        String response = sendRequest(request);
-        return deserializeList(response);
-    }
-
-    public String personNamesAsString() {
-        HttpRequest request = createGetRequest(BASE_URL + "/personNamesAsString");
-        return sendRequest(request);
-    }
-
-    public String isUnderage() {
-        HttpRequest request = createGetRequest(BASE_URL + "/isUnderage");
-        return sendRequest(request);
-    }
-
-    public List<PersonDTO> increaseAgeByTenPercent() {
-        HttpRequest request = createGetRequest(BASE_URL + "/increaseAgeByTenPercent");
-        String response = sendRequest(request);
-        return deserializeList(response);
-    }
-
-    @SneakyThrows
-    public String deleteDuplicate() {
-        HttpRequest request = createGetRequest(BASE_URL + "/deleteDuplicate");
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return String.valueOf(response.statusCode());
-    }
-
-    public Map<String, Integer> getStatistic() {
-        HttpRequest request = createGetRequest(BASE_URL + "/getStatistic");
-        String response = sendRequest(request);
-        return deserializeMap(response);
-    }
-
 
     public String addPerson(int age, String name) throws JsonProcessingException {
         PersonDTO personDTO = new PersonDTO();
@@ -217,23 +154,4 @@ public class PersonClient {
         }
     }
 
-    private LinkedHashMap<Character, List<PersonDTO>> deserializeLinkedHashMap(String json) {
-        try {
-            return objectMapper.readValue(json, new TypeReference<LinkedHashMap<Character, List<PersonDTO>>>() {
-            });
-        } catch (JsonProcessingException exception) {
-            throw new RuntimeException("Failed to deserialize response: " + exception.getMessage(), exception);
-        }
-    }
-
-    private Map<String, Integer> deserializeMap(String json) {
-        try {
-            return objectMapper.readValue(
-                    json,
-                    new TypeReference<Map<String, Integer>>() {
-                    });
-        } catch (JsonProcessingException exception) {
-            throw new RuntimeException("Failed to deserialize response: " + exception.getMessage(), exception);
-        }
-    }
 }
