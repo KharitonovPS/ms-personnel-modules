@@ -1,4 +1,4 @@
-package org.kharitonov.person.http.client.client;
+package org.kharitonov.person.http.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
