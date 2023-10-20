@@ -2,7 +2,6 @@ package org.kharitonov.ms.person.service.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.service.PersonService;
 import org.kharitonov.ms.person.service.util.BindingResultMessageBuilder;
@@ -12,7 +11,6 @@ import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,31 +40,21 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO){
         personService.save(personDTO);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> updatePerson(
+    public ResponseEntity<HttpStatus> update(
             @PathVariable("id") Long id,
-            @RequestBody @Valid PersonDTO personDTO,
-            BindingResult bindingResult
+            @RequestBody @Valid PersonDTO personDTO
     ) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResultMessageBuilder
-                    .makeErrorMessage(bindingResult);
-
-            throw new PersonNotCreatedException(errorMessage);
-        }
-        Person person = personDTOMapper.dtoToPerson(personDTO);
-        personService.updatePerson(id, person);
-
+        personService.update(id, personDTO);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteById(@PathVariable("id") Long id) {
-        personService.deleteById(id);
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id) {
+        personService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

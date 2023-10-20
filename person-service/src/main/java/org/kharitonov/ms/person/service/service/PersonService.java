@@ -4,13 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
-import org.kharitonov.ms.person.service.util.BindingResultMessageBuilder;
-import org.kharitonov.ms.person.service.util.PersonNotCreatedException;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,9 +43,9 @@ public class PersonService {
                 .orElseThrow(() -> new PersonNotFoundException(id));
     }
 
-    public Person updatePerson(Long id, Person newPerson) {
-
-        return personRepo.findById(id)
+    public void update(Long id, PersonDTO personDTO) {
+        Person newPerson = personDTOMapper.dtoToPerson(personDTO);
+        personRepo.findById(id)
                 .map(person -> {
                     person.setName(newPerson.getName());
                     person.setAge(newPerson.getAge());
@@ -62,7 +58,7 @@ public class PersonService {
                 });
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         personRepo.deleteById(id);
     }
 
