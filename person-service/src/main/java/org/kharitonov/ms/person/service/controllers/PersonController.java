@@ -35,10 +35,8 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public PersonDTO getPerson(@PathVariable("id") Long id) {
-        return personDTOMapper
-                .personToDto(personService.findById(id)
-                );
+    public PersonDTO getById(@PathVariable("id") Long id) {
+        return personService.getById(id);
     }
 
     @PostMapping

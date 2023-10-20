@@ -5,6 +5,7 @@ import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
+import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,5 +58,12 @@ public class PersonService {
 
     public void deleteById(Long id) {
         personRepo.deleteById(id);
+    }
+
+    public PersonDTO getById(Long id) {
+        return personDTOMapper.personToDto
+                (personRepo.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id)
+                ));
     }
 }
