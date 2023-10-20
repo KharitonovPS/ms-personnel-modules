@@ -40,20 +40,11 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(
-            @RequestBody @Valid PersonDTO personDTO,
-            BindingResult bindingResult
-    ) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResultMessageBuilder
-                    .makeErrorMessage(bindingResult);
-
-            throw new PersonNotCreatedException(errorMessage);
-        }
-        personService.save(personDTOMapper.dtoToPerson(personDTO));
-
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO){
+        personService.save(personDTO);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> updatePerson(
