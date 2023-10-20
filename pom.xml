@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>org.kharitonov</groupId>
-    <artifactId>ms-person</artifactId>
+    <artifactId>ms-personnel-modules</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>

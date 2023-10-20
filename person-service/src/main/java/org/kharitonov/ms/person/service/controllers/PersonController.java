@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/persons")
 @RequiredArgsConstructor
-public class PersonRESTController {
+public class PersonController {
 
     private final PersonService personService;
     private final PersonDTOMapper personDTOMapper;
