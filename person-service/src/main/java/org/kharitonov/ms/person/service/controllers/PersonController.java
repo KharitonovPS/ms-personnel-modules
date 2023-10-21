@@ -50,22 +50,4 @@ public class PersonController {
         personService.deleteById(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
-    @ExceptionHandler
-    private ResponseEntity<PersonErrorResponse> handler(PersonNotFoundException e) {
-        PersonErrorResponse response = new PersonErrorResponse(
-                e.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<PersonErrorResponse> handler(PersonNotCreatedException e) {
-        PersonErrorResponse response = new PersonErrorResponse(
-                e.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 }
