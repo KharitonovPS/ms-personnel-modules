@@ -9,12 +9,11 @@ import org.kharitonov.ms.person.service.util.PersonErrorResponse;
 import org.kharitonov.ms.person.service.util.PersonNotCreatedException;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/persons")
@@ -26,10 +25,8 @@ public class PersonController {
     private final BindingResultMessageBuilder bindingResultMessageBuilder;
 
     @GetMapping
-    public List<PersonDTO> findAllPerson() {
-        return personService.findAll().stream()
-                .map(personDTOMapper::personToDto)
-                .collect(Collectors.toList());
+    public Page<PersonDTO> getAll(Pageable pageable) {
+        return personService.getPages(pageable);
     }
 
     @GetMapping("/{id}")

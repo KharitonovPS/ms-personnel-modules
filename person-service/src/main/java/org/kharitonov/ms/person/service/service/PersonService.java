@@ -6,6 +6,9 @@ import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,21 +29,8 @@ public class PersonService {
         personRepo.save(person);
     }
 
-
-    private Person enrichPerson(Person person) {
-        person.setCreatedAt(LocalDateTime.now());
-        person.setUpdatedAt(LocalDateTime.now());
-        person.setCreatedWho("ADMIN");
-        return person;
-    }
-
     public List<Person> findAll() {
         return personRepo.findAll();
-    }
-
-    public Person findById(long id) {
-        return personRepo.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
     }
 
     public void update(Long id, PersonDTO personDTO) {
@@ -67,5 +57,21 @@ public class PersonService {
                 (personRepo.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id)
                 ));
+    }
+
+    private Person enrichPerson(Person person) {
+        person.setCreatedAt(LocalDateTime.now());
+        person.setUpdatedAt(LocalDateTime.now());
+        person.setCreatedWho("ADMIN");
+        return person;
+    }
+
+    public Page<PersonDTO> getPages(Pageable pageable) {
+        Page<Person> personPage = personRepo.findAll(pageable);
+        List <PersonDTO> personDTOList = personPage
+                .stream()
+                .map(personDTOMapper::personToDto)
+                .toList();
+        return  new PageImpl<>(personDTOList);
     }
 }
