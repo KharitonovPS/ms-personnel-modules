@@ -2,9 +2,7 @@ package org.kharitonov.ms.person.service.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.service.PersonService;
-import org.kharitonov.ms.person.service.util.BindingResultMessageBuilder;
 import org.kharitonov.ms.person.service.util.PersonErrorResponse;
 import org.kharitonov.ms.person.service.util.PersonNotCreatedException;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class PersonController {
 
     private final PersonService personService;
-    private final PersonDTOMapper personDTOMapper;
-    private final BindingResultMessageBuilder bindingResultMessageBuilder;
 
     @GetMapping
     public Page<PersonDTO> getAll(Pageable pageable) {
@@ -31,7 +27,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public PersonDTO getById(@PathVariable("id") Long id) {
-        return personService.getById(id);
+        return personService.getElementById(id);
     }
 
     @PostMapping
@@ -45,13 +41,13 @@ public class PersonController {
             @PathVariable("id") Long id,
             @RequestBody @Valid PersonDTO personDTO
     ) {
-        personService.update(id, personDTO);
+        personService.updatePerson(id, personDTO);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id) {
-        personService.delete(id);
+        personService.deleteById(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

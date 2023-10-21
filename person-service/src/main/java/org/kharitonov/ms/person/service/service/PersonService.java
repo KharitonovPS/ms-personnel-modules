@@ -22,18 +22,13 @@ public class PersonService {
     private final PersonDTOMapper personDTOMapper;
 
     public void save(PersonDTO personDTO) {
-        Person person = enrichPerson(
-                personDTOMapper
+        Person person = enrichPerson(personDTOMapper
                         .dtoToPerson(personDTO)
         );
         personRepo.save(person);
     }
 
-    public List<Person> findAll() {
-        return personRepo.findAll();
-    }
-
-    public void update(Long id, PersonDTO personDTO) {
+    public void updatePerson(Long id, PersonDTO personDTO) {
         Person newPerson = personDTOMapper.dtoToPerson(personDTO);
         personRepo.findById(id)
                 .map(person -> {
@@ -48,11 +43,12 @@ public class PersonService {
                 });
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
+        personRepo.findById(id).orElseThrow(()->new PersonNotFoundException(id));
         personRepo.deleteById(id);
     }
 
-    public PersonDTO getById(Long id) {
+    public PersonDTO getElementById(Long id) {
         return personDTOMapper.personToDto
                 (personRepo.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id)
