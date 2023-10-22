@@ -13,9 +13,9 @@ public class MSPersonApplication {
         SpringApplication.run(MSPersonApplication.class, args);
     }
 
-    @Bean
-    public Validator validatorBuilder(){
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        return factory.getValidator();
-    }
+//    @Bean
+//    public Validator validatorBuilder(){
+//    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+//        return factory.getValidator();
+//    }
 }
