@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
+import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -50,6 +51,17 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andReturn();
         Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+    }
+
+    @Test
+    public void getByNonExistedIdPersonControllerTest() throws Exception {
+        long id = 100L;
+        MvcResult mvcResult = this.mockMvc
+                .perform(get("/persons/" + id))
+                .andDo(print()).andExpect(status().isNotFound())
+                .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof PersonNotFoundException))
+                .andExpect(jsonPath("$.message").value("Could not find person with id - " + id))
+                .andReturn();
     }
 
 
