@@ -30,7 +30,7 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO){
         personService.save(personDTO);
-        return ResponseEntity.ok(HttpStatus.CREATED);
+    return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

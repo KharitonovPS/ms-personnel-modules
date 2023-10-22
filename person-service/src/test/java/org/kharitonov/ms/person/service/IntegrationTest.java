@@ -11,12 +11,15 @@ import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,12 +93,49 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
         for (int i = 0; i < contentArray.length(); i++) {
             JSONObject person = contentArray.getJSONObject(i);
-            if(person.getString("name").equals("David") && person.getInt("age")==28){
+            if (person.getString("name").equals("David") && person.getInt("age") == 28) {
                 found = true;
                 break;
             }
         }
-
         Assertions.assertTrue(found, "Expected value not found in 'content' array.");
     }
+
+    @Test
+    public void postRequestPersonControllerTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(post("/persons")
+                        .content(asJsonString(new Person("Josh", 67)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals("\"CREATED\"", mvcResult.getResponse().getContentAsString());
+
+    }
+    public static String asJsonString(Person person) {
+        try {
+            return new ObjectMapper().writeValueAsString(person);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void postRequestWithNotValidValuesPersonControllerTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(post("/persons")
+                        .content(asJsonString(new Person("Josh", 888)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().is4xxClientError())
+                .andReturn();
+
+        Assertions.assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
+
+    }
+
+
+
 }
