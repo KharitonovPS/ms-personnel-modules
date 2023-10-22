@@ -2,6 +2,8 @@ package org.kharitonov.ms.person.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,4 +75,27 @@ public class IntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
     }
 
+    @Test
+    public void getAllByPagesPersonControllerTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(get("/persons?page=2&size=1"))
+                .andDo(print()).andExpect(status().isOk())
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray contentArray = jsonResponse.getJSONArray("content");
+
+        boolean found = false;
+
+        for (int i = 0; i < contentArray.length(); i++) {
+            JSONObject person = contentArray.getJSONObject(i);
+            if(person.getString("name").equals("David") && person.getInt("age")==28){
+                found = true;
+                break;
+            }
+        }
+
+        Assertions.assertTrue(found, "Expected value not found in 'content' array.");
+    }
 }
