@@ -56,7 +56,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
     @Test
     public void getByNonExistedIdPersonControllerTest() throws Exception {
         long id = 100L;
-        MvcResult mvcResult = this.mockMvc
+        this.mockMvc
                 .perform(get("/persons/" + id))
                 .andDo(print()).andExpect(status().isNotFound())
                 .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof PersonNotFoundException))
@@ -64,5 +64,13 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 .andReturn();
     }
 
+    @Test
+    public void getAllPersonControllerTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(get("/persons"))
+                .andDo(print()).andExpect(status().isOk())
+                .andReturn();
+        Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+    }
 
 }
