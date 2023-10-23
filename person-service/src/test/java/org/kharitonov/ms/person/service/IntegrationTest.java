@@ -3,6 +3,7 @@ package org.kharitonov.ms.person.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.io.UnsupportedEncodingException;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,9 +66,9 @@ public class IntegrationTest extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(get("/persons/" + id))
                 .andDo(print()).andExpect(status().isNotFound())
-                .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof PersonNotFoundException))
-                .andExpect(jsonPath("$.message").value("Could not find person with id - " + id))
-                .andReturn();
+                .andExpect(result -> Assertions.assertTrue
+                        (result.getResolvedException() instanceof PersonNotFoundException))
+                .andExpect(jsonPath("$.message").value("Could not find person with id - " + id));
     }
 
     @Test
@@ -85,19 +87,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 .andDo(print()).andExpect(status().isOk())
                 .andReturn();
 
-        String response = mvcResult.getResponse().getContentAsString();
-        JSONObject jsonResponse = new JSONObject(response);
-        JSONArray contentArray = jsonResponse.getJSONArray("content");
 
-        boolean found = false;
-
-        for (int i = 0; i < contentArray.length(); i++) {
-            JSONObject person = contentArray.getJSONObject(i);
-            if (person.getString("name").equals("David") && person.getInt("age") == 28) {
-                found = true;
-                break;
-            }
-        }
+        Boolean found = responseContainsValue(mvcResult, "David", 28);
         Assertions.assertTrue(found, "Expected value not found in 'content' array.");
     }
 
@@ -112,14 +103,6 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 .andReturn();
 
         Assertions.assertEquals("\"CREATED\"", mvcResult.getResponse().getContentAsString());
-
-    }
-    public static String asJsonString(Person person) {
-        try {
-            return new ObjectMapper().writeValueAsString(person);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -131,11 +114,75 @@ public class IntegrationTest extends AbstractIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().is4xxClientError())
                 .andReturn();
-
         Assertions.assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
+    }
 
+    @Test
+    public void putRequestPersonControllerTest() throws Exception {
+        this.mockMvc
+                .perform(put("/persons/999")
+                        .content(asJsonString(new Person("TestBoy", 1)))
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        MvcResult getAllRequest = this.mockMvc
+                .perform(get("/persons"))
+                .andDo(print()).andExpect(status().isOk())
+                .andReturn();
+
+        Boolean found = responseContainsValue(getAllRequest, "TestBoy", 1);
+        Assertions.assertTrue(found, "Expected value not found in 'content' array.");
+    }
+
+    @Test
+    public void putRequestWithNotValidValuesPersonControllerTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(put("/persons/1")
+                        .content(asJsonString(new Person("NotValidAge", 1199)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().is4xxClientError())
+                .andReturn();
+        Assertions.assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
+    }
+
+    @Test
+    public void deleteRequestPersonControllerTest() throws Exception {
+        this.mockMvc
+                .perform(delete("/persons/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().isOk());
+        MvcResult getAllRequest = this.mockMvc
+                .perform(get("/persons"))
+                .andDo(print()).andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertFalse(responseContainsValue(getAllRequest, "Alice", 25));
     }
 
 
+    public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age) throws JSONException, UnsupportedEncodingException {
+        String response = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray contentArray = jsonResponse.getJSONArray("content");
+
+        boolean found = false;
+
+        for (int i = 0; i < contentArray.length(); i++) {
+            JSONObject person = contentArray.getJSONObject(i);
+            if (person.getString("name").equals(name)
+                    && person.getInt("age") == age) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
+    public static String asJsonString(Person person) {
+        try {
+            return new ObjectMapper().writeValueAsString(person);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
