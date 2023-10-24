@@ -13,8 +13,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.util.Arrays;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
-public class AbstractIntegrationTest {
+@ContextConfiguration(initializers = AbstractIntegrationServiceTest.Initializer.class)
+public class AbstractIntegrationServiceTest {
 
 
     public static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer<>()

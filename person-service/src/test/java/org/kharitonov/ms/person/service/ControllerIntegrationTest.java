@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
 
 import java.io.UnsupportedEncodingException;
 
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @RequiredArgsConstructor
-public class IntegrationTest extends AbstractIntegrationTest {
+public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Autowired
     private PersonRepo personRepo;
@@ -62,7 +63,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void getByNonExistedIdPersonControllerTest() throws Exception {
-        long id = 100L;
+        long id = RandomUtils.nextLong();
         this.mockMvc
                 .perform(get("/persons/" + id))
                 .andDo(print()).andExpect(status().isNotFound())
@@ -159,7 +160,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
     }
 
 
-    public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age) throws JSONException, UnsupportedEncodingException {
+    public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age)
+            throws JSONException, UnsupportedEncodingException {
         String response = mvcResult.getResponse().getContentAsString();
         JSONObject jsonResponse = new JSONObject(response);
         JSONArray contentArray = jsonResponse.getJSONArray("content");
