@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.kharitonov.person.model.dto.PersonDTO;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,7 +18,6 @@ import java.time.Duration;
 import java.util.List;
 
 @Getter
-@Service
 @RequiredArgsConstructor
 @Setter
 public class PersonClient {
