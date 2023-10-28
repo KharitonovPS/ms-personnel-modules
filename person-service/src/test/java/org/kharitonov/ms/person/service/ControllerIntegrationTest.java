@@ -54,7 +54,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void getByIdPersonControllerTest() throws Exception {
         MvcResult mvcResult = this.mockMvc
-                .perform(get("/persons/16"))
+                .perform(get("/persons/21"))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andReturn();
@@ -148,7 +148,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void deleteRequestPersonControllerTest() throws Exception {
         this.mockMvc
-                .perform(delete("/persons/1")
+                .perform(delete("/persons/6")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk());
         MvcResult getAllRequest = this.mockMvc
