@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.UnsupportedEncodingException;
 
@@ -47,7 +47,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     void doIt() {
         personRepo.deleteAll();
 
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
         log.info("Preloading " + personRepo.save(new Person("Bob", 30)));
@@ -59,7 +59,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void getByIdPersonControllerTest() throws Exception {
         MvcResult mvcResult = this.mockMvc
-                .perform(get("/persons/21"))
+                .perform(get("/persons/Alice"))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andReturn();
@@ -68,13 +68,13 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void getByNonExistedIdPersonControllerTest() throws Exception {
-        long id = RandomUtils.nextLong();
+        String name = RandomStringUtils.randomAlphabetic(8);
         this.mockMvc
-                .perform(get("/persons/" + id))
+                .perform(get("/persons/" + name))
                 .andDo(print()).andExpect(status().isNotFound())
                 .andExpect(result -> Assertions.assertTrue
                         (result.getResolvedException() instanceof PersonNotFoundException))
-                .andExpect(jsonPath("$.message").value("Could not find person with id - " + id));
+                .andExpect(jsonPath("$.message").value("Could not find person with name - " + name));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void deleteRequestPersonControllerTest() throws Exception {
         this.mockMvc
-                .perform(delete("/persons/6")
+                .perform(delete("/persons/11")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk());
         MvcResult getAllRequest = this.mockMvc
