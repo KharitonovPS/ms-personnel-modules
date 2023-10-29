@@ -48,13 +48,6 @@ public class PersonService {
         personRepo.deleteById(id);
     }
 
-    public PersonDTO getElementById(Long id) {
-        return personDTOMapper.personToDto
-                (personRepo.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id)
-                ));
-    }
-
     private Person enrichPerson(Person person) {
         person.setCreatedAt(LocalDateTime.now());
         person.setUpdatedAt(LocalDateTime.now());
@@ -69,5 +62,12 @@ public class PersonService {
                 .map(personDTOMapper::personToDto)
                 .toList();
         return  new PageImpl<>(personDTOList);
+    }
+
+    public PersonDTO getElementByName(String name) {
+        return personDTOMapper.personToDto
+                (personRepo.findByName(name)
+                        .orElseThrow(() -> new PersonNotFoundException(name)
+                        ));
     }
 }

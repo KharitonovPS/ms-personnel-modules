@@ -22,9 +22,9 @@ public class PersonController {
         return personService.getPages(pageable);
     }
 
-    @GetMapping("/{id}")
-    public PersonDTO getById(@PathVariable("id") Long id) {
-        return personService.getElementById(id);
+    @GetMapping("/{name}")
+    public PersonDTO getByName(@PathVariable("name") String name) {
+        return personService.getElementByName(name);
     }
 
     @PostMapping

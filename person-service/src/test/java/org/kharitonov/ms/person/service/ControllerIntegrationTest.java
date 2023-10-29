@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
+import org.kharitonov.person.http.client.PersonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,11 +39,15 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
 
+    private final PersonClient personClient = new PersonClient();
+
+
+
     @BeforeEach
     void doIt() {
         personRepo.deleteAll();
 
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
         log.info("Preloading " + personRepo.save(new Person("Bob", 30)));
@@ -160,6 +165,16 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     }
 
 
+    @Test
+    public void clientCheck(){
+               log.info(personClient.findAllPerson().toString());
+    }
+    @Test
+    public void clientCheck1(){
+        log.info(personClient.getPerson(1).toString());
+    }
+
+
     public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age)
             throws JSONException, UnsupportedEncodingException {
         String response = mvcResult.getResponse().getContentAsString();
@@ -186,5 +201,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
             throw new RuntimeException(e);
         }
     }
+
+
 
 }
