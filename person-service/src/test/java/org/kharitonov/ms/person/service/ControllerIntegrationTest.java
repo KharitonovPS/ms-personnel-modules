@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
@@ -25,7 +24,6 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -64,17 +62,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
     }
 
-    @Test
-    public void getByIdPersonControllerTest() throws Exception {
-        MvcResult mvcResult = this.mockMvc
-                .perform(get("/persons/Alice"))
-                .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Alice"))
-                .andReturn();
-        assertEquals("application/json", mvcResult.getResponse().getContentType());
-    }
-
-    @Test
+        @Test
     public void getByNonExistedIdPersonControllerTest() throws Exception {
         String name = RandomStringUtils.randomAlphabetic(8);
         this.mockMvc
@@ -174,7 +162,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
 
     @Test
-    public void clientFindAllTest(){
+    public void personControllerFindAllTest(){
         CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(localServerPort, "/persons");
         assertNotNull(personDTOS);
         assertEquals(5, personDTOS.getNumberOfElements());
@@ -182,14 +170,21 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         PersonDTO testPerson = new PersonDTO();
         testPerson.setName("Alice");
         testPerson.setAge(25);
-        assertEquals(true, personDTOS.getContent().get(0).equals(testPerson));
+        assertTrue(personDTOS.getContent().get(0).equals(testPerson));
     }
     @Test
-    public void clientGetPersonTest(){
-        log.info(personClient.getPerson(localServerPort,"/persons/Alice").toString());
-
+    public void personControllerFindByNameTest(){
+        PersonDTO personDTO = personClient.getPerson(localServerPort,"/persons/Alice");
+        assertEquals("Alice", personDTO.getName());
     }
-
+    @Test
+    public void personControllerFindByNonExisingNameTest(){
+        String randomName = RandomStringUtils.randomAlphabetic(7);
+        RuntimeException runtimeException = assertThrows(RuntimeException.class,
+                ()-> personClient.getPerson(localServerPort,"/persons/"+randomName)
+                );
+        assertTrue( runtimeException.getMessage().contains("HTTP request failed with status code:"));
+    }
 
     public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age)
             throws JSONException, UnsupportedEncodingException {
