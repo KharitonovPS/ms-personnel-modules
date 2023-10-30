@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
-import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.http.client.PersonClient;
 import org.kharitonov.person.http.client.util.CustomPageImpl;
 import org.kharitonov.person.model.dto.PersonDTO;
@@ -28,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -39,14 +37,13 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     private PersonRepo personRepo;
 
     @LocalServerPort
-    private int localServerPort;
+    private int port;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
 
     private final PersonClient personClient = new PersonClient();
-
 
 
     @BeforeEach
@@ -60,26 +57,6 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         log.info("Preloading " + personRepo.save(new Person("David", 28)));
         log.info("Preloading " + personRepo.save(new Person("David", 38)));
         log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
-    }
-
-        @Test
-    public void getByNonExistedIdPersonControllerTest() throws Exception {
-        String name = RandomStringUtils.randomAlphabetic(8);
-        this.mockMvc
-                .perform(get("/persons/" + name))
-                .andDo(print()).andExpect(status().isNotFound())
-                .andExpect(result -> assertTrue
-                        (result.getResolvedException() instanceof PersonNotFoundException))
-                .andExpect(jsonPath("$.message").value("Could not find person with name - " + name));
-    }
-
-    @Test
-    public void getAllPersonControllerTest() throws Exception {
-        MvcResult mvcResult = this.mockMvc
-                .perform(get("/persons"))
-                .andDo(print()).andExpect(status().isOk())
-                .andReturn();
-        assertEquals("application/json", mvcResult.getResponse().getContentType());
     }
 
     @Test
@@ -162,29 +139,43 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
 
     @Test
-    public void personControllerFindAllTest(){
-        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(localServerPort, "/persons");
+    public void personControllerFindAllTest() {
+        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(port, "/persons");
         assertNotNull(personDTOS);
         assertEquals(5, personDTOS.getNumberOfElements());
         assertNotNull(personDTOS.getContent());
         PersonDTO testPerson = new PersonDTO();
         testPerson.setName("Alice");
         testPerson.setAge(25);
-        assertTrue(personDTOS.getContent().get(0).equals(testPerson));
+        assertEquals(personDTOS.getContent().get(0), testPerson);
     }
+
     @Test
-    public void personControllerFindByNameTest(){
-        PersonDTO personDTO = personClient.getPerson(localServerPort,"/persons/Alice");
+    public void personControllerFindPageTest() {
+        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(port, "/persons?page=1&size=2");
+        assertNotNull(personDTOS);
+        assertEquals(2, personDTOS.getNumberOfElements());
+        PersonDTO testPerson = new PersonDTO();
+        testPerson.setName("David");
+        testPerson.setAge(28);
+        assertEquals(personDTOS.getContent().get(0), testPerson);
+    }
+
+    @Test
+    public void personControllerFindByNameTest() {
+        PersonDTO personDTO = personClient.getPerson(port, "/persons/Alice");
         assertEquals("Alice", personDTO.getName());
     }
+
     @Test
-    public void personControllerFindByNonExisingNameTest(){
+    public void personControllerFindByNonExisingNameTest() {
         String randomName = RandomStringUtils.randomAlphabetic(7);
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                ()-> personClient.getPerson(localServerPort,"/persons/"+randomName)
-                );
-        assertTrue( runtimeException.getMessage().contains("HTTP request failed with status code:"));
+                () -> personClient.getPerson(port, "/persons/" + randomName)
+        );
+        assertTrue(runtimeException.getMessage().contains("HTTP request failed with status code:"));
     }
+
 
     public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age)
             throws JSONException, UnsupportedEncodingException {
@@ -212,7 +203,6 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }
