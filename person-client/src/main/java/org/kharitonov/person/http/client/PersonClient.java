@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.kharitonov.person.model.dto.PersonDTO;
+import org.kharitonov.person.http.client.util.CustomPageImpl;
+import org.springframework.core.ParameterizedTypeReference;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,7 +24,7 @@ import java.util.List;
 @Setter
 public class PersonClient {
 
-    private static final String BASE_URL = "http://localhost:8080/persons";
+    private static final String BASE_URI = "http://localhost:";
 
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
@@ -34,14 +36,14 @@ public class PersonClient {
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
     }
-    public List<PersonDTO> findAllPerson() {
-        HttpRequest request = createGetRequest(BASE_URL);
+    public CustomPageImpl<PersonDTO> findAllPerson(int port, String url) {
+        HttpRequest request = createGetRequest(port, url);
         String response = sendRequest(request);
         return deserializeList(response);
     }
 
-    public PersonDTO getPerson(int id) {
-        HttpRequest request = createGetRequest(BASE_URL + "/" + id);
+    public PersonDTO getPerson(int port, String url) {
+        HttpRequest request = createGetRequest(port, url);
         String response = sendRequest(request);
         return deserialize(response);
     }
@@ -52,18 +54,18 @@ public class PersonClient {
         personDTO.setName(name);
         ObjectMapper objectMapper = new ObjectMapper();
         String personAsString = objectMapper.writeValueAsString(personDTO);
-        HttpRequest request = createPostRequest(BASE_URL, personAsString);
+        HttpRequest request = createPostRequest(BASE_URI, personAsString);
         return sendRequest(request);
     }
 
     public String deletePerson(int id) {
-        String url = PersonClient.BASE_URL + "/" + id;
+        String url = PersonClient.BASE_URI + "/" + id;
         HttpRequest request = createDeleteRequest(url);
         return sendRequest(request);
     }
 
     public String updatePerson(int age, String name, int id) throws JsonProcessingException {
-        String url = PersonClient.BASE_URL + "/" + id;
+        String url = PersonClient.BASE_URI + "/" + id;
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(name);
         personDTO.setAge(age);
@@ -72,10 +74,10 @@ public class PersonClient {
         return sendRequest(request);
     }
 
-    public HttpRequest createGetRequest(String url) {
+    public HttpRequest createGetRequest(int port, String url) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(url))
+                    .uri(new URI(BASE_URI+ port+ url))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {
@@ -145,11 +147,11 @@ public class PersonClient {
         }
     }
 
-    private List<PersonDTO> deserializeList(String json) {
+    private CustomPageImpl<PersonDTO> deserializeList(String json) {
         try {
             return objectMapper.readValue(
                     json,
-                    new TypeReference<List<PersonDTO>>() {
+                    new TypeReference<CustomPageImpl<PersonDTO>>() {
                     });
         } catch (JsonProcessingException exception) {
             throw new RuntimeException("Failed to deserialize response: " + exception.getMessage(), exception);

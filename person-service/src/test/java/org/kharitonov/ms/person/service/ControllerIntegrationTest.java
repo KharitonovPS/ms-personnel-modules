@@ -12,7 +12,10 @@ import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.kharitonov.ms.person.service.util.PersonNotFoundException;
 import org.kharitonov.person.http.client.PersonClient;
+import org.kharitonov.person.http.client.util.CustomPageImpl;
+import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,7 +25,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +39,9 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Autowired
     private PersonRepo personRepo;
+
+    @LocalServerPort
+    private int localServerPort;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -63,7 +71,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andReturn();
-        Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+        assertEquals("application/json", mvcResult.getResponse().getContentType());
     }
 
     @Test
@@ -72,7 +80,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         this.mockMvc
                 .perform(get("/persons/" + name))
                 .andDo(print()).andExpect(status().isNotFound())
-                .andExpect(result -> Assertions.assertTrue
+                .andExpect(result -> assertTrue
                         (result.getResolvedException() instanceof PersonNotFoundException))
                 .andExpect(jsonPath("$.message").value("Could not find person with name - " + name));
     }
@@ -83,7 +91,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 .perform(get("/persons"))
                 .andDo(print()).andExpect(status().isOk())
                 .andReturn();
-        Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+        assertEquals("application/json", mvcResult.getResponse().getContentType());
     }
 
     @Test
@@ -95,7 +103,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
 
         Boolean found = responseContainsValue(mvcResult, "David", 28);
-        Assertions.assertTrue(found, "Expected value not found in 'content' array.");
+        assertTrue(found, "Expected value not found in 'content' array.");
     }
 
     @Test
@@ -108,7 +116,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 .andDo(print()).andExpect(status().isOk())
                 .andReturn();
 
-        Assertions.assertEquals("\"CREATED\"", mvcResult.getResponse().getContentAsString());
+        assertEquals("\"CREATED\"", mvcResult.getResponse().getContentAsString());
     }
 
     @Test
@@ -120,7 +128,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().is4xxClientError())
                 .andReturn();
-        Assertions.assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
+        assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
     }
 
     @Test
@@ -136,7 +144,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 .andReturn();
 
         Boolean found = responseContainsValue(getAllRequest, "TestBoy", 1);
-        Assertions.assertTrue(found, "Expected value not found in 'content' array.");
+        assertTrue(found, "Expected value not found in 'content' array.");
     }
 
     @Test
@@ -147,7 +155,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().is4xxClientError())
                 .andReturn();
-        Assertions.assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
+        assertEquals("Invalid request content.", mvcResult.getResponse().getErrorMessage());
     }
 
     @Test
@@ -161,17 +169,25 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 .andDo(print()).andExpect(status().isOk())
                 .andReturn();
 
-        Assertions.assertFalse(responseContainsValue(getAllRequest, "Alice", 25));
+        assertFalse(responseContainsValue(getAllRequest, "Alice", 25));
     }
 
 
     @Test
-    public void clientCheck(){
-               log.info(personClient.findAllPerson().toString());
+    public void clientFindAllTest(){
+        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(localServerPort, "/persons");
+        assertNotNull(personDTOS);
+        assertEquals(5, personDTOS.getNumberOfElements());
+        assertNotNull(personDTOS.getContent());
+        PersonDTO testPerson = new PersonDTO();
+        testPerson.setName("Alice");
+        testPerson.setAge(25);
+        assertEquals(true, personDTOS.getContent().get(0).equals(testPerson));
     }
     @Test
-    public void clientCheck1(){
-        log.info(personClient.getPerson(1).toString());
+    public void clientGetPersonTest(){
+        log.info(personClient.getPerson(localServerPort,"/persons/Alice").toString());
+
     }
 
 
