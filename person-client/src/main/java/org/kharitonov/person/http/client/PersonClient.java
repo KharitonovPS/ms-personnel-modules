@@ -36,6 +36,7 @@ public class PersonClient {
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
     }
+
     public CustomPageImpl<PersonDTO> findAllPerson(int port, String url) {
         HttpRequest request = createGetRequest(port, url);
         String response = sendRequest(request);
@@ -48,18 +49,18 @@ public class PersonClient {
         return deserialize(response);
     }
 
-    public String addPerson(int age, String name) throws JsonProcessingException {
+    public String addPerson(int port,  String name, int age) throws JsonProcessingException {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setAge(age);
         personDTO.setName(name);
         ObjectMapper objectMapper = new ObjectMapper();
         String personAsString = objectMapper.writeValueAsString(personDTO);
-        HttpRequest request = createPostRequest(BASE_URI, personAsString);
+        HttpRequest request = createPostRequest(BASE_URI + port + "/persons", personAsString);
         return sendRequest(request);
     }
 
-    public String deletePerson(int id) {
-        String url = PersonClient.BASE_URI + "/" + id;
+    public String deletePerson(int port, Long id) {
+        String url = PersonClient.BASE_URI + port + "/persons/" + id;
         HttpRequest request = createDeleteRequest(url);
         return sendRequest(request);
     }
@@ -77,7 +78,7 @@ public class PersonClient {
     public HttpRequest createGetRequest(int port, String url) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(BASE_URI+ port+ url))
+                    .uri(new URI(BASE_URI + port + url))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {

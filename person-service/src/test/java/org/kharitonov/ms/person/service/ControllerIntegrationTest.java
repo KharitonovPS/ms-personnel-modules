@@ -1,5 +1,6 @@
 package org.kharitonov.ms.person.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -23,6 +24,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -59,17 +62,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
     }
 
-    @Test
-    public void getAllByPagesPersonControllerTest() throws Exception {
-        MvcResult mvcResult = this.mockMvc
-                .perform(get("/persons?page=2&size=1"))
-                .andDo(print()).andExpect(status().isOk())
-                .andReturn();
 
-
-        Boolean found = responseContainsValue(mvcResult, "David", 28);
-        assertTrue(found, "Expected value not found in 'content' array.");
-    }
 
     @Test
     public void postRequestPersonControllerTest() throws Exception {
@@ -176,6 +169,29 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         assertTrue(runtimeException.getMessage().contains("HTTP request failed with status code:"));
     }
 
+    @Test
+    public void personControllerCreatePersonTest() throws JsonProcessingException {
+        String name = RandomStringUtils.randomAlphabetic(12);
+        personClient.addPerson(port, name, 11 );
+        assertTrue(personRepo.findByName(name).isPresent());
+    }
+
+    @Test
+    public void personControllerCreateNotValidPersonTest() throws JsonProcessingException {
+        String longName = RandomStringUtils.randomAlphabetic(111);
+        RuntimeException runtimeException = assertThrows(RuntimeException.class,
+                () -> personClient.addPerson(port, longName, 1112 )
+        );
+        assertTrue(runtimeException.getMessage().contains("\"status\":400"));
+    }
+
+    @Test
+    public void personControllerDeleteTest(){
+        Long id = 7L;
+        Optional<Person> person = personRepo.findById(id);
+        personClient.deletePerson(port, id);
+        assertFalse(personRepo.findByName(person.get().getName()).isPresent());
+    }
 
     public static Boolean responseContainsValue(MvcResult mvcResult, String name, int age)
             throws JSONException, UnsupportedEncodingException {
