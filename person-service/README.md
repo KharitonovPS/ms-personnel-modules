@@ -6,7 +6,7 @@ This project consists of three modules: a parent module, `ms-personnel-modules`,
 
 The person-model contains information about DTO classes for managing data between the service and client layers.
 
-## person client module
+## person client
 
 The person-client module sends HTTP requests using GET, POST, PUT, and DELETE methods to perform basic CRUD operations. It utilizes Jackson to serialize objects into JSON format and deserialize them into POJOs using ObjectMapper. Additionally, a custom utility class, CustomPageImpl, has been introduced to facilitate the deserialization of responses from APIs that implement pagination.
 
