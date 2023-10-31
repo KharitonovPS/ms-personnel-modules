@@ -1,14 +1,14 @@
-# Multi-Module Maven Project
+# ms personnel modules
 
 This project consists of three modules: a parent module, `ms-personnel-modules`, which contains shared dependencies for the entire project, and thre child modules, `person-service`, `person-client` and `person-model`.
 
-## person-model
+## person model
 
 The person-model contains information about DTO classes for managing data between the service and client layers.
 
-## http-client-module
+## person client module
 
-The hperson-client module sends HTTP requests using GET, POST, PUT, and DELETE methods to perform basic CRUD operations. It utilizes Jackson to serialize objects into JSON format and deserialize them into POJOs using ObjectMapper. Additionally, a custom utility class, CustomPageImpl, has been introduced to facilitate the deserialization of responses from APIs that implement pagination.
+The person-client module sends HTTP requests using GET, POST, PUT, and DELETE methods to perform basic CRUD operations. It utilizes Jackson to serialize objects into JSON format and deserialize them into POJOs using ObjectMapper. Additionally, a custom utility class, CustomPageImpl, has been introduced to facilitate the deserialization of responses from APIs that implement pagination.
 
 ## person-service
 
