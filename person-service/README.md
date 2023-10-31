@@ -1,40 +1,16 @@
 # Multi-Module Maven Project
 
-This project consists of three modules: a parent module, `multi-module`, which contains shared dependencies for the entire project, and two child modules, `http-client-module` and `ms-person-module`.
+This project consists of three modules: a parent module, `ms-personnel-modules`, which contains shared dependencies for the entire project, and thre child modules, `person-service`, `person-client` and `person-model`.
+
+## person-model
+
+The person-model contains information about DTO classes for managing data between the service and client layers.
 
 ## http-client-module
 
-The `http-client-module` module sends HTTP requests using GET, POST, PUT, and DELETE methods. It uses Jackson to serialize objects into JSON format and deserialize them into POJOs using ObjectMapper.
+The hperson-client module sends HTTP requests using GET, POST, PUT, and DELETE methods to perform basic CRUD operations. It utilizes Jackson to serialize objects into JSON format and deserialize them into POJOs using ObjectMapper. Additionally, a custom utility class, CustomPageImpl, has been introduced to facilitate the deserialization of responses from APIs that implement pagination.
 
-### GET Requests
-
-- **findAllPerson:** Fetches a list of all persons from the server.
-- **getPerson(id):** Fetches a specific person by ID.
-- **filterMultiplyEven:** Fetches persons with even ages.
-- **sortByAge:** Fetches persons sorted by age.
-- **sortByFirstCharOfName:** Fetches persons sorted by the first character of their names.
-- **findMaxAge:** Fetches the person with the maximum age.
-- **skipAndLimitation:** Fetches a limited number of persons with optional skipping.
-- **personNamesAsString:** Fetches names of persons as a string.
-- **isUnderage:** Checks if there are any underage persons.
-- **increaseAgeByTenPercent:** Increases the age of persons by 10%.
-
-### POST, PUT, DELETE Requests
-
-- **addPerson(personDTO):** Adds a new person to the server.
-- **deletePerson(id):** Deletes a person by ID.
-- **updatePerson(personDTO, id):** Updates a person's information by ID.
-
-### Additional Features
-
-- **deleteDuplicate:** Deletes duplicate records on the server.
-- **getStatistic:** Fetches statistics about persons.
-
-In `PersonHttpClientApplication`, response logs from the `ms-person-module` REST server are written, displaying response status and body.
-
-## ms-person-module
-
-The `ms-person-module` includes the addition of the `LoadDatabase` class for loading data and the `PersonRestController` for handling REST endpoints. Below are the details of these changes.
+## person-service
 
 ### LoadDatabase
 
@@ -46,5 +22,7 @@ The `PersonRestController` class handles REST endpoints related to `Person` enti
 
 The controller uses validation annotations for input data and handles exceptions by returning appropriate error responses. It also converts between `Person` entities and `PersonDTO` objects using the `PersonDTOMapper` class.
 
-The controller includes exception handling for `PersonNotFoundException` and `PersonNotCreatedException`.
+The controller includes exception handling for PersonNotFoundException. This exception handling is managed by a ControllerAdvice.
+
+Integration tests have been added using the Testcontainers PostgreSQL container. Requests are sent via HTTP to the API using the PersonClient. Additionally, unit tests have been written where, instead of the client, the WebApplicationContext and MockMvc are used.
 
