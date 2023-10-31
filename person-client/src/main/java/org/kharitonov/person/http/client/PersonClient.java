@@ -6,9 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.kharitonov.person.model.dto.PersonDTO;
 import org.kharitonov.person.http.client.util.CustomPageImpl;
-import org.springframework.core.ParameterizedTypeReference;
+import org.kharitonov.person.model.dto.PersonDTO;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +16,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -49,7 +47,7 @@ public class PersonClient {
         return deserialize(response);
     }
 
-    public String addPerson(int port,  String name, int age) throws JsonProcessingException {
+    public String addPerson(int port, String name, int age) throws JsonProcessingException {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setAge(age);
         personDTO.setName(name);
@@ -65,8 +63,8 @@ public class PersonClient {
         return sendRequest(request);
     }
 
-    public String updatePerson(int age, String name, int id) throws JsonProcessingException {
-        String url = PersonClient.BASE_URI + "/" + id;
+    public String updatePerson(int port, String name, int age, int id) throws JsonProcessingException {
+        String url = PersonClient.BASE_URI + port + "/persons/" + id;
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(name);
         personDTO.setAge(age);
