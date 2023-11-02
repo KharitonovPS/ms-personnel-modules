@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
-import org.kharitonov.person.http.client.PersonClient;
+import org.kharitonov.person.http.client.PersonClientImpl;
 import org.kharitonov.person.http.client.util.CustomPageImpl;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @LocalServerPort
     private int port;
 
-    private PersonClient personClient;
+    private PersonClientImpl personClientImpl;
 
 
     @BeforeEach
@@ -42,14 +42,14 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         log.info("Preloading " + personRepo.save(new Person("David", 38)));
         log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
 
-        if (personClient == null) {
-            personClient = new PersonClient(port);
+        if (personClientImpl == null) {
+            personClientImpl = new PersonClientImpl(port, 1);
         }
     }
 
     @Test
     public void personControllerFindAllTest() {
-        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson();
+        CustomPageImpl<PersonDTO> personDTOS = personClientImpl.findAllPerson();
         assertNotNull(personDTOS);
         assertEquals(5, personDTOS.getNumberOfElements());
         assertNotNull(personDTOS.getContent());
@@ -61,7 +61,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerFindPageTest() {
-        CustomPageImpl<PersonDTO> personDTOS = personClient.findAllPerson(1, 2);
+        CustomPageImpl<PersonDTO> personDTOS = personClientImpl.findAllPerson(1, 2);
         assertNotNull(personDTOS);
         assertEquals(2, personDTOS.getNumberOfElements());
         PersonDTO testPerson = new PersonDTO();
@@ -72,7 +72,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerFindByNameTest() {
-        PersonDTO personDTO = personClient.getPerson("Alice");
+        PersonDTO personDTO = personClientImpl.getPerson("Alice");
         assertEquals("Alice", personDTO.getName());
     }
 
@@ -80,7 +80,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     public void personControllerFindByNonExisingNameTest() {
         String randomName = RandomStringUtils.randomAlphabetic(7);
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClient.getPerson(randomName)
+                () -> personClientImpl.getPerson(randomName)
         );
         assertTrue(runtimeException.getMessage().contains("HTTP request failed"));
     }
@@ -88,7 +88,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void personControllerCreatePersonTest() throws JsonProcessingException {
         String name = RandomStringUtils.randomAlphabetic(12);
-        String response = personClient.addPerson(name, 11);
+        String response = personClientImpl.addPerson(name, 11);
         log.info(response);
         assertEquals(response, "\"CREATED\"");
         assertTrue(personRepo.findByName(name).isPresent());
@@ -99,7 +99,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     public void personControllerCreateNotValidPersonTest() {
         String longName = RandomStringUtils.randomAlphabetic(111);
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClient.addPerson(longName, 1112)
+                () -> personClientImpl.addPerson(longName, 1112)
         );
         assertTrue(runtimeException.getMessage().contains("\"status\":400"));
     }
@@ -108,7 +108,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     public void personControllerDeleteTest() {
         Long id = 7L;
         Optional<Person> person = personRepo.findById(id);
-        String response = personClient.deletePerson(id);
+        String response = personClientImpl.deletePerson(id);
         assertFalse(personRepo.findByName(person.get().getName()).isPresent());
         assertEquals(response, "\"OK\"");
         List<Person> resultlist = personRepo.findAll();
@@ -119,7 +119,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerPutRequestTest() throws JsonProcessingException {
-        String response = personClient.updatePerson("Sadik", 11, 1);
+        String response = personClientImpl.updatePerson("Sadik", 11, 1);
         assertEquals(response, "\"OK\"");
         List<Person> person = personRepo.findAll();
         for (Person findedPerson : person) {
@@ -130,7 +130,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void personControllerPutRequestNonValidParamTest() {
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClient.updatePerson("Sadik", 1111, 1));
+                () -> personClientImpl.updatePerson("Sadik", 1111, 1));
         assertTrue(runtimeException.getMessage().contains("HTTP request failed"));
     }
 }
