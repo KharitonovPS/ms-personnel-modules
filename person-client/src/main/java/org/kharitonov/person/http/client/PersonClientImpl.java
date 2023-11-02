@@ -22,7 +22,7 @@ public class PersonClientImpl implements PersonClient {
 
     public PersonClientImpl(int port, int timeoutSeconds) {
         this.objectMapper = new ObjectMapper();
-        this.BASE_URI = "http://localhost:" + port;
+        this.BASE_URI = "http://localhost:" + port + "/persons";
         this.clientRequestHelper = new ClientRequestHelper(timeoutSeconds);
     }
 
@@ -45,7 +45,7 @@ public class PersonClientImpl implements PersonClient {
 
     public PersonDTO getPerson(String name) {
         HttpRequest request = clientRequestHelper
-                .createGetRequest(BASE_URI, name);
+                .createGetRequest(BASE_URI + "/", name);
         String response = clientRequestHelper
                 .sendRequest(request);
 
@@ -53,8 +53,7 @@ public class PersonClientImpl implements PersonClient {
     }
 
     public String addPerson(String name, int age)
-            throws JsonProcessingException
-    {
+            throws JsonProcessingException {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setAge(age);
         personDTO.setName(name);
@@ -62,13 +61,13 @@ public class PersonClientImpl implements PersonClient {
                 .writeValueAsString(personDTO);
         HttpRequest request = clientRequestHelper
                 .createPostRequest(
-                        BASE_URI + "/persons", personAsString
+                        BASE_URI, personAsString
                 );
         return clientRequestHelper.sendRequest(request);
     }
 
     public String deletePerson(Long id) {
-        String url = BASE_URI + "/persons/" + id;
+        String url = BASE_URI + "/" + id;
         HttpRequest request = clientRequestHelper
                 .createDeleteRequest(url);
         return clientRequestHelper.sendRequest(request);
@@ -76,7 +75,7 @@ public class PersonClientImpl implements PersonClient {
 
     public String updatePerson(String name, int age, int id)
             throws JsonProcessingException {
-        String url = BASE_URI + "/persons/" + id;
+        String url = BASE_URI + "/" + id;
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(name);
         personDTO.setAge(age);

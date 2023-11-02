@@ -29,7 +29,7 @@ public class ClientRequestHelper {
     public HttpRequest createGetRequest(String url) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(url + "/persons"))
+                    .uri(new URI(url))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {
@@ -40,7 +40,7 @@ public class ClientRequestHelper {
     public HttpRequest createGetRequest(String url, String name) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(url + "/persons/" + name))
+                    .uri(new URI(url + name))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {
@@ -51,7 +51,7 @@ public class ClientRequestHelper {
     public HttpRequest createGetRequest(String url, int page, int size) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(url + "/persons?page=" + page + "&size=" + size))
+                    .uri(new URI(url + "?page=" + page + "&size=" + size))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {
