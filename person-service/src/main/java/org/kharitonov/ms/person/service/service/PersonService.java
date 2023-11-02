@@ -44,7 +44,6 @@ public class PersonService {
     }
 
     public void deleteById(Long id) {
-        personRepo.findById(id).orElseThrow(()->new PersonNotFoundException(id));
         personRepo.deleteById(id);
     }
 
@@ -65,9 +64,10 @@ public class PersonService {
     }
 
     public PersonDTO getElementByName(String name) {
-        return personDTOMapper.personToDto
-                (personRepo.findByName(name)
+        Person findPerson = personRepo
+                .findByName(name)
                         .orElseThrow(() -> new PersonNotFoundException(name)
-                        ));
+                        );
+        return personDTOMapper.personToDto(findPerson);
     }
 }
