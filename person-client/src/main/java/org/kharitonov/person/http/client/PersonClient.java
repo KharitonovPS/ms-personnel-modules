@@ -26,6 +26,7 @@ public class PersonClient {
 
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private int port;
 
     public PersonClient() {
         this.objectMapper = new ObjectMapper();
@@ -35,36 +36,50 @@ public class PersonClient {
                 .build();
     }
 
-    public CustomPageImpl<PersonDTO> findAllPerson(int port, String url) {
-        HttpRequest request = createGetRequest(port, url);
+    public PersonClient(int port) {
+        this.objectMapper = new ObjectMapper();
+        this.httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(30))
+                .build();
+        this.port = port;
+    }
+
+    public CustomPageImpl<PersonDTO> findAllPerson() {
+        HttpRequest request = createGetRequest(port);
         String response = sendRequest(request);
         return deserializeList(response);
     }
 
-    public PersonDTO getPerson(int port, String url) {
-        HttpRequest request = createGetRequest(port, url);
+    public CustomPageImpl<PersonDTO> findAllPerson(int page, int size) {
+        HttpRequest request = createGetRequest(port, page, size);
+        String response = sendRequest(request);
+        return deserializeList(response);
+    }
+
+    public PersonDTO getPerson(String name) {
+        HttpRequest request = createGetRequest(port, name);
         String response = sendRequest(request);
         return deserialize(response);
     }
 
-    public String addPerson(int port, String name, int age) throws JsonProcessingException {
+    public String addPerson(String name, int age) throws JsonProcessingException {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setAge(age);
         personDTO.setName(name);
-        ObjectMapper objectMapper = new ObjectMapper();
         String personAsString = objectMapper.writeValueAsString(personDTO);
         HttpRequest request = createPostRequest(BASE_URI + port + "/persons", personAsString);
         return sendRequest(request);
     }
 
-    public String deletePerson(int port, Long id) {
-        String url = PersonClient.BASE_URI + port + "/persons/" + id;
+    public String deletePerson(Long id) {
+        String url = BASE_URI + port + "/persons/" + id;
         HttpRequest request = createDeleteRequest(url);
         return sendRequest(request);
     }
 
-    public String updatePerson(int port, String name, int age, int id) throws JsonProcessingException {
-        String url = PersonClient.BASE_URI + port + "/persons/" + id;
+    public String updatePerson(String name, int age, int id) throws JsonProcessingException {
+        String url = BASE_URI + port + "/persons/" + id;
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(name);
         personDTO.setAge(age);
@@ -73,10 +88,32 @@ public class PersonClient {
         return sendRequest(request);
     }
 
-    public HttpRequest createGetRequest(int port, String url) {
+    public HttpRequest createGetRequest(int port) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(BASE_URI + port + url))
+                    .uri(new URI(BASE_URI + port + "/persons"))
+                    .GET()
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpRequest createGetRequest(int port, String name) {
+        try {
+            return HttpRequest.newBuilder()
+                    .uri(new URI(BASE_URI + port + "/persons/" + name))
+                    .GET()
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpRequest createGetRequest(int port, int page, int size) {
+        try {
+            return HttpRequest.newBuilder()
+                    .uri(new URI(BASE_URI + port + "/persons?" + "page=" + page + "&size=" + size))
                     .GET()
                     .build();
         } catch (URISyntaxException e) {
