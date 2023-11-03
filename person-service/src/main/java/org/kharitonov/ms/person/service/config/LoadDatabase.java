@@ -18,7 +18,7 @@ public class LoadDatabase {
                 log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
                 log.info("Preloading " + personRepo.save(new Person("Bob", 30)));
                 log.info("Preloading " + personRepo.save(new Person("David", 28)));
-                log.info("Preloading " + personRepo.save(new Person("David", 38)));
+                log.info("Preloading " + personRepo.save(new Person("Lee", 38)));
                 log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
             };
         }

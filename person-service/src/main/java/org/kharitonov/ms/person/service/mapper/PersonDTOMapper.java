@@ -6,6 +6,8 @@ import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Component
@@ -15,6 +17,7 @@ public class PersonDTOMapper {
         Person person = new Person();
         person.setName(personDTO.getName());
         person.setAge(personDTO.getAge());
+        enrichPerson(person);
         return person;
     }
 
@@ -23,5 +26,10 @@ public class PersonDTOMapper {
         personDTO.setAge(person.getAge());
         personDTO.setName(person.getName());
         return personDTO;
+    }
+    private void enrichPerson(Person person) {
+        person.setCreatedAt(LocalDateTime.now());
+        person.setUpdatedAt(LocalDateTime.now());
+        person.setCreatedWho("ADMIN");
     }
 }

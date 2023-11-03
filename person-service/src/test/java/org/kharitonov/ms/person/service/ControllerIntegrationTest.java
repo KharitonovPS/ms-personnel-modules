@@ -119,11 +119,11 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerPutRequestTest() throws JsonProcessingException {
-        String response = personClientImpl.updatePerson("Sadik", 11, 1);
+        String response = personClientImpl.updatePerson("Sadik", 11, 6);
         assertEquals(response, "\"OK\"");
         List<Person> person = personRepo.findAll();
         for (Person findedPerson : person) {
-            log.info(findedPerson.getName());
+            log.info(findedPerson.toString());
         }
     }
 

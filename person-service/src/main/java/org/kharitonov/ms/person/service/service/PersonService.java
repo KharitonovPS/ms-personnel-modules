@@ -22,9 +22,8 @@ public class PersonService {
     private final PersonDTOMapper personDTOMapper;
 
     public void save(PersonDTO personDTO) {
-        Person person = enrichPerson(personDTOMapper
-                        .dtoToPerson(personDTO)
-        );
+        Person person = personDTOMapper
+                .dtoToPerson(personDTO);
         personRepo.save(person);
     }
 
@@ -37,37 +36,27 @@ public class PersonService {
                     person.setUpdatedAt(LocalDateTime.now());
                     return personRepo.save(person);
                 })
-                .orElseGet(() -> {
-                    enrichPerson(newPerson);
-                    return personRepo.save(newPerson);
-                });
+                .orElseGet(() -> personRepo.save(newPerson));
     }
 
     public void deleteById(Long id) {
         personRepo.deleteById(id);
     }
 
-    private Person enrichPerson(Person person) {
-        person.setCreatedAt(LocalDateTime.now());
-        person.setUpdatedAt(LocalDateTime.now());
-        person.setCreatedWho("ADMIN");
-        return person;
-    }
-
     public Page<PersonDTO> getPages(Pageable pageable) {
         Page<Person> personPage = personRepo.findAll(pageable);
-        List <PersonDTO> personDTOList = personPage
+        List<PersonDTO> personDTOList = personPage
                 .stream()
                 .map(personDTOMapper::personToDto)
                 .toList();
-        return  new PageImpl<>(personDTOList);
+        return new PageImpl<>(personDTOList);
     }
 
     public PersonDTO getElementByName(String name) {
         Person findPerson = personRepo
                 .findByName(name)
-                        .orElseThrow(() -> new PersonNotFoundException(name)
-                        );
+                .orElseThrow(() -> new PersonNotFoundException(name)
+                );
         return personDTOMapper.personToDto(findPerson);
     }
 }
