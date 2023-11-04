@@ -2,6 +2,7 @@ package org.kharitonov.ms.person.service.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kharitonov.ms.person.service.service.PersonService;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/persons")
 @RequiredArgsConstructor

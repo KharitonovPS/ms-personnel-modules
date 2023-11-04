@@ -18,13 +18,14 @@ import java.util.Objects;
 @ToString
 @Data
 @Entity
+@Table(indexes = {@Index(name = "idx_name", columnList = "name")} )
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     @NotEmpty(message = "Name should not be empty!")
     @Size(min = 2, max = 30, message = "Name length should be between 2 and 30 characters")
     private String name;
