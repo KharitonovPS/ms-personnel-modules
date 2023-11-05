@@ -18,14 +18,15 @@ import java.util.Objects;
 @ToString
 @Data
 @Entity
-@Table(indexes = {@Index(name = "idx_name", columnList = "name")} )
+@Table(indexes = {@Index(name = "idx_name", columnList = "name")})
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 100)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_auto_gen")
     private Long id;
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     @NotEmpty(message = "Name should not be empty!")
     @Size(min = 2, max = 30, message = "Name length should be between 2 and 30 characters")
     private String name;
@@ -38,6 +39,7 @@ public class Person {
         this.name = name;
         this.age = age;
     }
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

@@ -2,6 +2,7 @@ package org.kharitonov.ms.person.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +41,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
         log.info("Preloading " + personRepo.save(new Person("Bob", 30)));
         log.info("Preloading " + personRepo.save(new Person("David", 28)));
-        log.info("Preloading " + personRepo.save(new Person("David", 38)));
+        log.info("Preloading " + personRepo.save(new Person("Davis", 38)));
         log.info("Preloading " + personRepo.save(new Person("Eve", 35)));
 
         if (personClientImpl == null) {
@@ -106,7 +108,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerDeleteTest() {
-        Long id = 7L;
+        Long id = 1015L;
         Optional<Person> person = personRepo.findById(id);
         String response = personClientImpl.deletePerson(id);
         assertFalse(personRepo.findByName(person.get().getName()).isPresent());
@@ -133,4 +135,39 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
                 () -> personClientImpl.updatePerson("Sadik", 1111, 1));
         assertTrue(runtimeException.getMessage().contains("HTTP request failed"));
     }
+
+    @SneakyThrows
+    @Test
+    public void personControllerCreateWithHighLoad() throws JsonProcessingException {
+        long size = 100000;
+        List<Person> personList = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            Person person = new Person();
+            person.setName("Test load " + i);
+            person.setAge(1);
+            personList.add(person);
+        }
+        for (Person person: personList) {
+            personClientImpl.addPerson(person.getName(), 1);
+        }
+        assertEquals(size+5, personRepo.count());
+    }
+
+    @Test
+    public void testButchLoad(){
+        long size = 1000;
+        List<Person> personList = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            Person person = new Person();
+            person.setName("Test butch " + i);
+            person.setAge(1);
+            personList.add(person);
+            }
+        personRepo.saveAll(personList);
+        assertEquals(size+5, personRepo.count());
+    }
+
+
 }

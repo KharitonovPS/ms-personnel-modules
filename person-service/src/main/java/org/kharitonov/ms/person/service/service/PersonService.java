@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,11 +21,21 @@ public class PersonService {
 
     private final PersonRepo personRepo;
     private final PersonDTOMapper personDTOMapper;
+    private final QueueService queueService;
 
-    public void save(PersonDTO personDTO) {
-        Person person = personDTOMapper
-                .dtoToPerson(personDTO);
-        personRepo.save(person);
+
+    public void addPersonToQueue(PersonDTO personDTO) {
+        queueService.addToQueue(personDTO);
+    }
+
+    @Transactional
+    public void save() {
+        while (!queueService.isEmpty()) {
+            PersonDTO personDTO = queueService.getFromQueue();
+            Person person = personDTOMapper
+                    .dtoToPerson(personDTO);
+            personRepo.save(person);
+        }
     }
 
     public void updatePerson(Long id, PersonDTO personDTO) {

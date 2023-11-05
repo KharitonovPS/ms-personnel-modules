@@ -1,8 +1,5 @@
 package org.kharitonov.ms.person.service.controllers;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +24,8 @@ public class PersonController {
     public Page<PersonDTO> getAll(Pageable pageable) {
         log.info("getAll() request = {}, response = {}", pageable,
                 personService.getPages(pageable)
-                .stream()
-                .toList());
+                        .stream()
+                        .toList());
         return personService.getPages(pageable);
     }
 
@@ -40,10 +37,11 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO){
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO) {
         log.info("crete() request = {}, response = {}", personDTO, HttpStatus.CREATED);
-        personService.save(personDTO);
-    return ResponseEntity.ok(HttpStatus.CREATED);
+        personService.addPersonToQueue(personDTO);
+        personService.save();
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
