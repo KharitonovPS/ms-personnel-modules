@@ -5,26 +5,24 @@ import lombok.RequiredArgsConstructor;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @RequiredArgsConstructor
 @Getter
 public class QueueService {
 
-    private final Queue<PersonDTO> personDTOQueue = new ConcurrentLinkedQueue<>();
+    private final LinkedBlockingQueue<PersonDTO> personQueue = new LinkedBlockingQueue<>();
 
     public void addToQueue(PersonDTO personDTO) {
-        personDTOQueue.add(personDTO);
+        personQueue.add(personDTO);
     }
 
-    public PersonDTO getFromQueue() {
-        return personDTOQueue.remove();
+    public List<PersonDTO> getPersonsFromQueue() {
+        List<PersonDTO> resultList = new ArrayList<>();
+        personQueue.drainTo(resultList, 10);
+        return resultList;
     }
-
-    public boolean isEmpty() {
-        return personDTOQueue.isEmpty();
-    }
-
 }
