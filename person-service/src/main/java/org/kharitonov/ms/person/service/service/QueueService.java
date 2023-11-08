@@ -13,18 +13,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Getter
 public class QueueService {
 
-    private final Queue<PersonDTO> personDTOS = new ConcurrentLinkedQueue<>();
+    private final Queue<PersonDTO> personDTOQueue = new ConcurrentLinkedQueue<>();
 
     public void addToQueue(PersonDTO personDTO) {
-        personDTOS.add(personDTO);
+        personDTOQueue.add(personDTO);
     }
 
     public PersonDTO getFromQueue() {
-        return personDTOS.remove();
+        return personDTOQueue.remove();
     }
 
     public boolean isEmpty() {
-        return personDTOS.isEmpty();
+        return personDTOQueue.isEmpty();
     }
 
 }

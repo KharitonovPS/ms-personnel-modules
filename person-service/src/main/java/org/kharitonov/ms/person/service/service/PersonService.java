@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +30,19 @@ public class PersonService {
         queueService.addToQueue(personDTO);
     }
 
-    @Transactional
     public void save() {
-        while (!queueService.isEmpty()) {
-            PersonDTO personDTO = queueService.getFromQueue();
-            Person person = personDTOMapper
-                    .dtoToPerson(personDTO);
-            personRepo.save(person);
+        List<Person> resultList = new ArrayList<>();
+        int batchSize = 50;
+        if (queueService.getPersonDTOQueue().size() >= batchSize) {
+            while (!queueService.isEmpty()) {
+                resultList = queueService.getPersonDTOQueue()
+                        .stream()
+                        .map(person -> queueService.getFromQueue())
+                        .map(personDTOMapper::dtoToPerson)
+                        .collect(Collectors.toList());
+            }
+            personRepo.saveAllAndFlush(resultList);
+            resultList.clear();
         }
     }
 

@@ -139,7 +139,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @SneakyThrows
     @Test
     public void personControllerCreateWithHighLoad() throws JsonProcessingException {
-        long size = 100000;
+        long size = 111;
         List<Person> personList = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {

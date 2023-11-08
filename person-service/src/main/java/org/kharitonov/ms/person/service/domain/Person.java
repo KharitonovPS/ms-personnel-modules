@@ -22,7 +22,7 @@ import java.util.Objects;
 public class Person {
 
     @Id
-    @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 100)
+    @SequenceGenerator(name = "sequence_id_auto_gen", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_auto_gen")
     private Long id;
 
