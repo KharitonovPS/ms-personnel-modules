@@ -32,7 +32,7 @@ public class PersonService {
                         .stream()
                         .map(personDTOMapper::dtoToPerson)
                         .toList();
-            personRepo.saveAllAndFlush(personList);
+            personRepo.saveAll(personList);
     }
 
     public void updatePerson(Long id, PersonDTO personDTO) {
