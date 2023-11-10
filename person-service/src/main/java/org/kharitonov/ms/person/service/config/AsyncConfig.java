@@ -1,5 +1,6 @@
 package org.kharitonov.ms.person.service.config;
 
+import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -11,6 +12,9 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
+    private ThreadPoolTaskExecutor executor;
+
+
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -20,6 +24,15 @@ public class AsyncConfig {
         executor.setThreadNamePrefix("pooThread-");
         executor.initialize();
         return executor;
-
     }
+
+
+    @PreDestroy
+    public void destroy() {
+        if (executor != null) {
+            executor.shutdown();
+        }
+    }
+
+
 }
