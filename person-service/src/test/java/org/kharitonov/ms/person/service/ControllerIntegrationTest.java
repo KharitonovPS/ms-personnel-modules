@@ -139,7 +139,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @SneakyThrows
     @Test
     public void personControllerCreateWithHighLoad() throws JsonProcessingException {
-        long size = 111;
+        long size = 1122;
         List<Person> personList = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
@@ -151,11 +151,12 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         for (Person person: personList) {
             personClientImpl.addPerson(person.getName(), 1);
         }
+        System.out.println(personRepo.count());
         assertEquals(size+5, personRepo.count());
     }
 
     @Test
-    public void testButchLoad(){
+    public void batchLoad(){
         long size = 1000;
         List<Person> personList = new ArrayList<>();
 
@@ -166,6 +167,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
             personList.add(person);
             }
         personRepo.saveAll(personList);
+        System.out.println(personRepo.count());
         assertEquals(size+5, personRepo.count());
     }
 

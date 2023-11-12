@@ -40,7 +40,6 @@ public class PersonController {
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO) {
         log.info("crete() request = {}, response = {}", personDTO, HttpStatus.CREATED);
         personService.addPersonToQueue(personDTO);
-        personService.save();
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 

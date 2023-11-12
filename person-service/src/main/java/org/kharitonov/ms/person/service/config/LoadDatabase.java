@@ -13,7 +13,7 @@ public class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(PersonRepo personRepo) {
-        if(personRepo.count()==0){
+        if (personRepo.count() == 0) {
             return args -> {
                 log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
                 log.info("Preloading " + personRepo.save(new Person("Bob", 30)));

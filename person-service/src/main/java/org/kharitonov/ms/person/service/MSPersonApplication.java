@@ -13,11 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class MSPersonApplication {
     public static void main(String[] args) {
         SpringApplication.run(MSPersonApplication.class, args);
+
     }
 
     @Bean
-    public Validator validatorBuilder(){
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    public Validator validatorBuilder() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         return factory.getValidator();
     }
 }
