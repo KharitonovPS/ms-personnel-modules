@@ -1,6 +1,8 @@
 package org.kharitonov.ms.person.service.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.kharitonov.ms.person.service.util.DataSaverThread;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
@@ -13,8 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PersonService {
 
@@ -25,15 +30,14 @@ public class PersonService {
 
     public void addPersonToQueue(PersonDTO personDTO) {
         queueService.addToQueue(personDTO);
+        queueService.notifyIsNotEmpty();
     }
 
-    public void save() {
-        List<Person> personList = queueService.getPersonsFromQueue()
-                        .stream()
-                        .map(personDTOMapper::dtoToPerson)
-                        .toList();
-            personRepo.saveAll(personList);
+    public void savePersonFromQueue() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new DataSaverThread(personRepo,queueService, personDTOMapper));
     }
+
 
     public void updatePerson(Long id, PersonDTO personDTO) {
         Person newPerson = personDTOMapper.dtoToPerson(personDTO);
