@@ -23,24 +23,9 @@ public class QueueService {
         personQueue.add(personDTO);
     }
 
-    private final Object IS_NOT_EMPTY = new Object();
-
     public List<PersonDTO> getPersonsFromQueue() {
         List<PersonDTO> resultList = new ArrayList<>();
-        personQueue.drainTo(resultList, 10);
+        personQueue.drainTo(resultList, 50);
         return resultList;
     }
-
-    public void notifyIsNotEmpty() {
-        synchronized (IS_NOT_EMPTY) {
-            IS_NOT_EMPTY.notify();
-        }
-    }
-
-    public void waitIsNotEmpty() throws InterruptedException {
-        synchronized (IS_NOT_EMPTY) {
-            IS_NOT_EMPTY.wait();
-        }
-    }
-
 }
