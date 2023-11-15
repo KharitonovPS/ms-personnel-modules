@@ -17,7 +17,7 @@ public class CustomPageImpl<T> extends PageImpl<T> {
                           @JsonProperty("first") boolean first,
                           @JsonProperty("number") int number,
                           @JsonProperty("size") int size,
-                          @JsonProperty ("totalElements") Long totalElements,
+                          @JsonProperty("totalElements") Long totalElements,
                           @JsonProperty("pageable") JsonNode pageable, @JsonProperty("last") boolean last,
                           @JsonProperty("empty") boolean empty,
                           @JsonProperty("totalPages") int totalPages, @JsonProperty("sort") JsonNode sort,

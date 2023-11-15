@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
-import org.kharitonov.ms.person.service.repository.PersonRepo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class QueueListener {
 
-    private final PersonRepo personRepo;
+    private final PersonService personService;
     private final QueueService queueService;
     private final PersonDTOMapper personDTOMapper;
 
@@ -49,7 +48,7 @@ public class QueueListener {
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();
-            personRepo.saveAll(personList);
+            personService.saveAll(personList);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }

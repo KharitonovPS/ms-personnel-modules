@@ -51,6 +51,10 @@ public class PersonService {
         personRepo.deleteById(id);
     }
 
+    public void saveAll(List<Person> list){
+        personRepo.saveAll(list);
+    }
+
     public Page<PersonDTO> getPages(Pageable pageable) {
         Page<Person> personPage = personRepo.findAll(pageable);
         List<PersonDTO> personDTOList = personPage
