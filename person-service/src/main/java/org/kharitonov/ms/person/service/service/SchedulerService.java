@@ -13,16 +13,13 @@ import org.springframework.stereotype.Service;
 public class SchedulerService {
 
     private final PersonRepo personRepo;
-    private final Long logFixedDelay;
 
-    public SchedulerService(PersonRepo personRepo,
-                            @Value("${scheduler.fixed.delay}") Long logFixedDelay) {
+    public SchedulerService(PersonRepo personRepo) {
         this.personRepo = personRepo;
-        this.logFixedDelay = logFixedDelay;
     }
 
     @Scheduled(fixedDelayString = "${scheduler.fixed.delay}")
-    public void schedulerEveryTenSeconds(){
+    public void schedulerEveryTenSeconds() {
         log.info("Table \"Persons\" {} - count.", personRepo.count());
     }
 }
