@@ -22,18 +22,17 @@ public class PersonController {
 
     @GetMapping
     public Page<PersonDTO> getAll(Pageable pageable) {
-        log.info("getAll() request = {}, response = {}", pageable,
-                personService.getPages(pageable)
-                        .stream()
-                        .toList());
-        return personService.getPages(pageable);
+        Page<PersonDTO> pageResponse = personService.getPages(pageable);
+        log.info("getAll() request = {}, response = {}",
+                pageable, pageResponse.toList());
+        return pageResponse;
     }
 
     @GetMapping("/{name}")
     public PersonDTO getByName(@PathVariable("name") String name) {
-        log.info("getByName(): request = {}, response = {}", name, personService.getElementByName(name));
-        return personService.getElementByName(name);
-
+        PersonDTO singlePersonResponse = personService.getElementByName(name);
+        log.info("getByName(): request = {}, response = {}", name, singlePersonResponse);
+        return singlePersonResponse;
     }
 
     @PostMapping

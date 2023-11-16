@@ -62,6 +62,7 @@ public class PersonService {
                 .map(personDTOMapper::personToDto)
                 .toList();
         return new PageImpl<>(personDTOList);
+
     }
 
     public PersonDTO getElementByName(String name) {

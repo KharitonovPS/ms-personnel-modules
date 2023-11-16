@@ -8,13 +8,14 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
+        ddl-auto: update
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
-        jdbc.batch_size: 50
+        jdbc:
+          batch_size: 50
         generate_statistics: false
         order_inserts: true
         order_updates: true
-        ddl-auto: update
 scheduler:
   fixed:
-    delay: 10000L
+    delay: 10000
