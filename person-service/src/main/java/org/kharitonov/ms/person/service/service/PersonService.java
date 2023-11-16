@@ -30,28 +30,24 @@ public class PersonService {
     }
 
     public void updatePerson(Long id, PersonDTO personDTO) {
-        Person newPerson = personDTOMapper.dtoToPerson(personDTO);
-        personRepo.findById(id)
-                .map(person -> {
-                    person.setName(newPerson.getName());
-                    person.setAge(newPerson.getAge());
-                    person.setUpdatedAt(LocalDateTime.now());
-                    return personRepo.save(person);
-                })
-                .ifPresentOrElse(existingPerson -> {
-                        },
-                        () -> queueService
-                                .addToQueue(
-                                        personDTOMapper
-                                                .personToDto(newPerson)
-                                ));
+        if (personRepo.findById(id).isEmpty()) {
+            queueService.addToQueue(personDTO);
+        } else {
+            personRepo.findById(id).map(person -> {
+                        person.setName(personDTO.getName());
+                        person.setAge(personDTO.getAge());
+                        person.setUpdatedAt(LocalDateTime.now());
+                        return personRepo.save(person);
+                    }
+            );
+        }
     }
 
     public void deleteById(Long id) {
         personRepo.deleteById(id);
     }
 
-    public void saveAll(List<Person> list){
+    public void saveAll(List<Person> list) {
         personRepo.saveAll(list);
     }
 
@@ -66,10 +62,7 @@ public class PersonService {
     }
 
     public PersonDTO getElementByName(String name) {
-        Person findPerson = personRepo
-                .findByName(name)
-                .orElseThrow(() -> new PersonNotFoundException(name)
-                );
+        Person findPerson = personRepo.findByName(name).orElseThrow(() -> new PersonNotFoundException(name));
         return personDTOMapper.personToDto(findPerson);
     }
 }
