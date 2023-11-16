@@ -16,6 +16,11 @@ spring:
         generate_statistics: false
         order_inserts: true
         order_updates: true
-scheduler:
-  fixed:
-    delay: 10000
+
+schedulerService:
+  showPersonCount:
+    intervalInMillis: 10000
+
+queueListener:
+  persistQueueData:
+    intervalInMillis: 2000

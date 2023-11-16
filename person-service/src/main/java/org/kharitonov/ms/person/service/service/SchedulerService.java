@@ -17,8 +17,8 @@ public class SchedulerService {
         this.personRepo = personRepo;
     }
 
-    @Scheduled(fixedDelayString = "${scheduler.fixed.delay}")
-    public void schedulerEveryTenSeconds() {
+    @Scheduled(fixedDelayString = "${schedulerService.showPersonCount.intervalInMillis}")
+    public void showPersonCount() {
         log.info("Table \"Persons\" {} - count.", personRepo.count());
     }
 }
