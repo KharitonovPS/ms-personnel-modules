@@ -23,4 +23,4 @@ schedulerService:
 
 queueListener:
   persistQueueData:
-    intervalInMillis: 2000
+    intervalInMillis: 5000

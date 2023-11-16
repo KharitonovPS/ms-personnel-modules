@@ -172,8 +172,31 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
         System.out.println(personRepo.count());
         assertEquals(size+5, personRepo.count());
-
     }
+
+    @SneakyThrows
+    @Test
+    public void savePersonWithExistName() throws JsonProcessingException {
+        Person person = new Person("Same", 1);
+        Person person2 = new Person("Unique", 1);
+        Person person3 = new Person("Same", 1);
+        List<Person> personList = new ArrayList<>();
+        personList.add(person);
+        personList.add(person2);
+        personList.add(person3);
+        for (Person people: personList) {
+            personClientImpl.addPerson(people.getName(), people.getAge());
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println(personRepo.count());
+        Thread.sleep(5000);
+        assertEquals(7, personRepo.count());
+    }
+
 
 
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
-import org.kharitonov.ms.person.service.util.PersonNotFoundException;
+import org.kharitonov.ms.person.service.exceptions.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

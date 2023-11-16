@@ -7,13 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 @Component
 @Data
@@ -33,7 +30,8 @@ public class QueueListener {
 
     private void readQueue() {
         try {
-            List<Person> personList = queueService.getPersonsFromQueue()
+            List<Person> personList = queueService
+                    .getPersonsFromQueue()
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();

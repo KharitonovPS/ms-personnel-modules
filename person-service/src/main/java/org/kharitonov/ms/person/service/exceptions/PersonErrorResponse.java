@@ -1,4 +1,4 @@
-package org.kharitonov.ms.person.service.util;
+package org.kharitonov.ms.person.service.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

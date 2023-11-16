@@ -1,7 +1,7 @@
 package org.kharitonov.ms.person.service.controllers;
 
-import org.kharitonov.ms.person.service.util.PersonErrorResponse;
-import org.kharitonov.ms.person.service.util.PersonNotFoundException;
+import org.kharitonov.ms.person.service.exceptions.PersonErrorResponse;
+import org.kharitonov.ms.person.service.exceptions.PersonNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

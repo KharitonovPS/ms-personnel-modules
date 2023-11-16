@@ -8,24 +8,21 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+
 @Data
 @Entity
-@Table(indexes = {@Index(name = "idx_name", columnList = "name")})
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(indexes = {@Index(name = "idx_name", columnList = "name", unique = true)})
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(unique = true, nullable = false)
     @NotEmpty(message = "Name should not be empty!")
     @Size(min = 2, max = 30, message = "Name length should be between 2 and 30 characters")
     private String name;
@@ -34,10 +31,6 @@ public class Person {
     @Max(value = 150, message = "Age must be less than or equal to 150")
     private int age;
 
-    public Person(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -45,8 +38,10 @@ public class Person {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "created_who")
-    private String createdWho;
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
 
     public Person(Long id, String name, int age) {
         this.id = id;
@@ -54,15 +49,4 @@ public class Person {
         this.age = age;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Person person)) return false;
-        return getAge() == person.getAge() && Objects.equals(getId(), person.getId()) && Objects.equals(getName(), person.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getAge());
-    }
 }
