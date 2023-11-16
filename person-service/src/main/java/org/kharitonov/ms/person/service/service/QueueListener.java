@@ -4,6 +4,7 @@ package org.kharitonov.ms.person.service.service;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.springframework.stereotype.Component;
@@ -12,9 +13,11 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 @Component
 @Data
 @RequiredArgsConstructor
+@Slf4j
 public class QueueListener {
 
     private final PersonService personService;
@@ -22,15 +25,15 @@ public class QueueListener {
     private final PersonDTOMapper personDTOMapper;
 
 
-
     private static final ScheduledExecutorService
             executorService =
-            Executors.newSingleThreadScheduledExecutor(runnable
-                    -> {
-                var thread = new Thread(runnable);
-                thread.setName("asm-publisher");
-                return thread;
-            });
+            Executors.newSingleThreadScheduledExecutor(
+                    runnable -> {
+                        var thread = new Thread(runnable);
+                        thread.setName("asm-publisher");
+                        return thread;
+                    }
+            );
 
     @PostConstruct
     public void start() {
@@ -50,7 +53,7 @@ public class QueueListener {
                     .toList();
             personService.saveAll(personList);
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            log.error("read queue:", e);
         }
     }
 }
