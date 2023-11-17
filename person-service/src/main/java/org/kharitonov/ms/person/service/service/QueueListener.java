@@ -10,8 +10,10 @@ import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Data
@@ -31,37 +33,45 @@ public class QueueListener {
 
     private void readQueue() {
         try {
-            List<Person> personList = queueService
-                    .getPersonsFromQueue()
+            List<Person> personList = queueService.getPersonsFromQueue()
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();
-            personService.saveAll(checkExistPersons(personList));
+            personService.saveAll(filterDuplicates(personList));
         } catch (Exception e) {
             log.error("read queue:", e);
         }
     }
 
-    private List<Person> checkExistPersons(List<Person> listFromQueue) {
-        LinkedHashSet<Person> personSet = new LinkedHashSet<>();
-        List<String> names = listFromQueue
-                .stream()
-                .map(Person::getName)
-                .toList();
-        List<Person> existingPersons = personService.findAllByName(names);
+    private List<Person> filterDuplicates(List<Person> listFromQueue) {
+        Set<String> existingNames = new HashSet<>();
+        List<Person> uniquePerson = new ArrayList<>();
+
         for (Person person : listFromQueue) {
-            if (!existingPersons.contains(person)) {
-                if (personSet.add(person)) {
-                    personSet.add(person);
-                } else {
-                    log.error("duplicate key value violates unique constraint \"idx_name\"," +
-                            ": {} already exist in current batch", person.getName());
-                }
+            if (!existingNames.contains(person.getName())) {
+                existingNames.add(person.getName());
+                uniquePerson.add(person);
             } else {
-                log.error("duplicate key value violates unique constraint \"idx_name\"," +
-                        ": {} already exist in database", person.getName());
+                log.error("duplicate key value violates unique constraint \"idx_name\","
+                        + ": {} already exist in current batch", person.getName());
             }
         }
-        return personSet.stream().toList();
+
+        List<Person> personsFromRepo = personService.findAllByName(
+                existingNames.stream().toList()
+        );
+        List<String> personsFromRepoNames = personsFromRepo.stream()
+                .map(Person::getName).toList();
+        List<Person> resultList = new ArrayList<>();
+
+        for (Person person : uniquePerson) {
+            if (!personsFromRepoNames.contains(person.getName())) {
+                resultList.add(person);
+            } else {
+                log.error("duplicate key value violates unique constraint \"idx_name\","
+                        + ": {} already exist in database", person.getName());
+            }
+        }
+        return resultList;
     }
 }

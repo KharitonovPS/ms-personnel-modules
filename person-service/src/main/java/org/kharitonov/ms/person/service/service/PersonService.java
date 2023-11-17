@@ -62,7 +62,8 @@ public class PersonService {
     }
 
     public PersonDTO getElementByName(String name) {
-        Person findPerson = personRepo.findByName(name).orElseThrow(() -> new PersonNotFoundException(name));
+        Person findPerson = personRepo.findByName(name)
+                .orElseThrow(() -> new PersonNotFoundException(name));
         return personDTOMapper.personToDto(findPerson);
     }
 

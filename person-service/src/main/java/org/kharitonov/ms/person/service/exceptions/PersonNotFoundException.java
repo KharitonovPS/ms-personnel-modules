@@ -1,12 +1,13 @@
 package org.kharitonov.ms.person.service.exceptions;
 
-public class PersonNotFoundException extends  RuntimeException{
+public class PersonNotFoundException extends RuntimeException {
 
-    public PersonNotFoundException(Long id){
+    public PersonNotFoundException(Long id) {
         super("Could not find person with id - " + id);
     }
-    public PersonNotFoundException(String name){
+
+    public PersonNotFoundException(String name) {
         super("Could not find person with name - " + name);
     }
-    
+
 }

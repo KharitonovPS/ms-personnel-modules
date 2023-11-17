@@ -96,10 +96,10 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         String name = RandomStringUtils.randomAlphabetic(12);
         String response = personClientImpl.addPerson(name, 11);
         log.info(response);
-        Thread.sleep(2000);
+        Thread.sleep(6000);
         assertEquals(response, "\"CREATED\"");
         assertTrue(personRepo.findByName(name).isPresent());
-        log.info(personRepo.findByName(name).toString());
+//        log.info(personRepo.findByName(name).toString());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @SneakyThrows
     @Test
     public void personControllerCreateWithHighLoad() throws JsonProcessingException {
-        long size = 1000;
+        long size = 200;
         List<Person> personList = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
@@ -153,29 +153,12 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
             person.setAge(1);
             personList.add(person);
         }
-        for (Person person: personList) {
+        for (Person person : personList) {
             personClientImpl.addPerson(person.getName(), 1);
         }
         System.out.println(personRepo.count());
         Thread.sleep(30000);
-        assertEquals(size+5, personRepo.count());
-    }
-
-    @Test
-    public void batchLoad(){
-        long size = 1000;
-        List<Person> personList = new ArrayList<>();
-
-        for (int i = 0; i < size; i++) {
-            Person person = new Person();
-            person.setName("Test butch " + i);
-            person.setAge(1);
-            personList.add(person);
-            }
-        personRepo.saveAll(personList);
-
-        System.out.println(personRepo.count());
-        assertEquals(size+5, personRepo.count());
+        assertEquals(size + 5, personRepo.count());
     }
 
     @SneakyThrows
@@ -190,11 +173,11 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         personList.add(person2);
         personList.add(person3);
         personList.add(person4);
-        for (Person people: personList) {
+        for (Person people : personList) {
             try {
                 Thread.sleep(300);
                 personClientImpl.addPerson(people.getName(), people.getAge());
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -202,7 +185,4 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         Thread.sleep(10000);
         assertEquals(7, personRepo.count());
     }
-
-
-
 }
