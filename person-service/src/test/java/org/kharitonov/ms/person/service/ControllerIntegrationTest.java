@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.Person;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
+import org.kharitonov.ms.person.service.service.QueueService;
 import org.kharitonov.person.http.client.PersonClientImpl;
 import org.kharitonov.person.http.client.util.CustomPageImpl;
 import org.kharitonov.person.model.dto.PersonDTO;
@@ -27,6 +28,9 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Autowired
     private PersonRepo personRepo;
+
+    @Autowired
+    private QueueService queueService;
 
     @LocalServerPort
     private int port;
@@ -178,22 +182,24 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void savePersonWithExistName() throws JsonProcessingException {
         Person person = new Person("Same", 1);
-        Person person2 = new Person("Unique", 1);
-        Person person3 = new Person("Same", 1);
+        Person person2 = new Person("Unique", 2);
+        Person person3 = new Person("Same", 3);
+        Person person4 = new Person("David", 4);
         List<Person> personList = new ArrayList<>();
         personList.add(person);
         personList.add(person2);
         personList.add(person3);
+        personList.add(person4);
         for (Person people: personList) {
-            personClientImpl.addPerson(people.getName(), people.getAge());
             try {
-                Thread.sleep(1000);
+                Thread.sleep(300);
+                personClientImpl.addPerson(people.getName(), people.getAge());
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
         System.out.println(personRepo.count());
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         assertEquals(7, personRepo.count());
     }
 

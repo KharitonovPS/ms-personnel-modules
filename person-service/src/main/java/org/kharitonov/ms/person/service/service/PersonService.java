@@ -65,4 +65,9 @@ public class PersonService {
         Person findPerson = personRepo.findByName(name).orElseThrow(() -> new PersonNotFoundException(name));
         return personDTOMapper.personToDto(findPerson);
     }
+
+    public List<Person> findAllByName(String name) {
+
+        return personRepo.findAllByName(name);
+    }
 }

@@ -10,6 +10,7 @@ import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Component
@@ -35,9 +36,42 @@ public class QueueListener {
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();
-            personService.saveAll(personList);
+            personService.saveAll(checkExistDuplicates(personList));
         } catch (Exception e) {
             log.error("read queue:", e);
         }
     }
+
+
+    private List<Person> checkExistDuplicates(List<Person> personList) {
+        LinkedHashSet<Person> personSet = new LinkedHashSet<>();
+        for (Person person : personList) {
+            List<Person> existingPersons = personService.findAllByName(person.getName());
+            if (existingPersons == null || existingPersons.isEmpty()) {
+                if (personSet.add(person)) {
+                    personSet.add(person);
+                } else {
+                    log.error("duplicate key value violates unique constraint \"idx_name\"," +
+                            ": {} already exist in current batch", person.getName());
+                }
+            } else {
+                log.error("duplicate key value violates unique constraint \"idx_name\"," +
+                        ": {} already exist in database", person.getName());
+            }
+        }
+        return personSet.stream().toList();
+    }
+
+//    private void readQueue() {
+//        try {
+//            List<Person> personList = queueService
+//                    .getPersonsFromQueue()
+//                    .stream()
+//                    .map(personDTOMapper::dtoToPerson)
+//                    .toList();
+//            personService.saveAll(personList);
+//        } catch (Exception e) {
+//            log.error("read queue:", e);
+//        }
+//    }
 }
