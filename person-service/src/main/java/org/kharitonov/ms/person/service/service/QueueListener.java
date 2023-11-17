@@ -36,18 +36,21 @@ public class QueueListener {
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();
-            personService.saveAll(checkExistDuplicates(personList));
+            personService.saveAll(checkExistPersons(personList));
         } catch (Exception e) {
             log.error("read queue:", e);
         }
     }
 
-
-    private List<Person> checkExistDuplicates(List<Person> personList) {
+    private List<Person> checkExistPersons(List<Person> listFromQueue) {
         LinkedHashSet<Person> personSet = new LinkedHashSet<>();
-        for (Person person : personList) {
-            List<Person> existingPersons = personService.findAllByName(person.getName());
-            if (existingPersons == null || existingPersons.isEmpty()) {
+        List<String> names = listFromQueue
+                .stream()
+                .map(Person::getName)
+                .toList();
+        List<Person> existingPersons = personService.findAllByName(names);
+        for (Person person : listFromQueue) {
+            if (!existingPersons.contains(person)) {
                 if (personSet.add(person)) {
                     personSet.add(person);
                 } else {
@@ -61,17 +64,4 @@ public class QueueListener {
         }
         return personSet.stream().toList();
     }
-
-//    private void readQueue() {
-//        try {
-//            List<Person> personList = queueService
-//                    .getPersonsFromQueue()
-//                    .stream()
-//                    .map(personDTOMapper::dtoToPerson)
-//                    .toList();
-//            personService.saveAll(personList);
-//        } catch (Exception e) {
-//            log.error("read queue:", e);
-//        }
-//    }
 }

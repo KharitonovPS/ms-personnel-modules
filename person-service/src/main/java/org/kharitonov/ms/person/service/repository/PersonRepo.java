@@ -13,5 +13,5 @@ public interface PersonRepo extends JpaRepository<Person, Long>, PagingAndSortin
 
     Optional<Person> findByName(String name);
 
-    List<Person> findAllByName(String name);
+    List<Person> findAllByNameIn(List<String> names);
 }

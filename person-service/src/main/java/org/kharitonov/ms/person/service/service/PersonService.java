@@ -3,9 +3,9 @@ package org.kharitonov.ms.person.service.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kharitonov.ms.person.service.domain.Person;
+import org.kharitonov.ms.person.service.exceptions.PersonNotFoundException;
 import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
 import org.kharitonov.ms.person.service.repository.PersonRepo;
-import org.kharitonov.ms.person.service.exceptions.PersonNotFoundException;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -66,8 +66,7 @@ public class PersonService {
         return personDTOMapper.personToDto(findPerson);
     }
 
-    public List<Person> findAllByName(String name) {
-
-        return personRepo.findAllByName(name);
+    public List<Person> findAllByName(List<String> names) {
+        return personRepo.findAllByNameIn(names);
     }
 }
