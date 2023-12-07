@@ -12,10 +12,6 @@ The person-client module sends HTTP requests using GET, POST, PUT, and DELETE me
 
 ## person-service
 
-### LoadDatabase
-
-The `LoadDatabase` class initializes the database with sample data. It uses Spring Boot's `CommandLineRunner` to run the data initialization logic when the application starts. Sample data includes `Person` objects with names and ages.
-
 ### PersonRestController
 
 The `PersonRestController` class handles REST endpoints related to `Person` entities. It provides endpoints for creating, updating, deleting, and querying `Person` objects. Additionally, it offers endpoints for various operations on `Person` objects, such as filtering, sorting, and statistical analysis.
@@ -24,5 +20,4 @@ The controller uses validation annotations for input data and handles exceptions
 
 The controller includes exception handling for PersonNotFoundException. This exception handling is managed by a ControllerAdvice.
 
-Integration tests have been added using the Testcontainers PostgreSQL container. Requests are sent via HTTP to the API using the PersonClient. Additionally, unit tests have been written where, instead of the client, the WebApplicationContext and MockMvc are used.
-
+Integration tests have been added using the Testcontainers PostgreSQL container. Requests are sent via HTTP to the API using the PersonClient.
