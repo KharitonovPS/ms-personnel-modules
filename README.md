@@ -1,4 +1,4 @@
-# ms personnel modules
+# REST service project
 
 This project consists of three modules: a parent module, `ms-personnel-modules`, which contains shared dependencies for the entire project, and thre child modules, `person-service`, `person-client` and `person-model`.
 
