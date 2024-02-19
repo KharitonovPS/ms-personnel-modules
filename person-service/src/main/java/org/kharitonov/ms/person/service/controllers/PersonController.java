@@ -3,6 +3,7 @@ package org.kharitonov.ms.person.service.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kharitonov.ms.person.service.domain.PersonResponseDto;
 import org.kharitonov.ms.person.service.service.PersonService;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,11 @@ public class PersonController {
         return singlePersonResponse;
     }
 
+    @GetMapping("/v1/{name}")
+    public PersonResponseDto getLike(@PathVariable("name") String name) {
+        return personService.findLikeName(name);
+    }
+
     @PostMapping
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO) {
         log.info("crete() request = {}, response = {}", personDTO, HttpStatus.CREATED);
@@ -57,5 +63,13 @@ public class PersonController {
         log.info("delete() request = id {}, response = {}", id, HttpStatus.OK);
         personService.deleteById(id);
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/page")
+    public PersonResponseDto takePages(
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset
+    ) {
+        return personService.findByPage(limit, offset);
     }
 }
