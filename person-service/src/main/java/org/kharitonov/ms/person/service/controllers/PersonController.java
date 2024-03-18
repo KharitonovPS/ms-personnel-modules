@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PersonController {
 
     private final PersonService personService;
 
-    @GetMapping
+    @GetMapping("/persons")
     public Page<PersonDTO> getAll(Pageable pageable) {
         Page<PersonDTO> pageResponse = personService.getPages(pageable);
         log.info("getAll() request = {}, response = {}",
@@ -29,7 +29,7 @@ public class PersonController {
         return pageResponse;
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("persons/{name}")
     public PersonDTO getByName(@PathVariable("name") String name) {
         PersonDTO singlePersonResponse = personService.getElementByName(name);
         log.info("getByName(): request = {}, response = {}", name, singlePersonResponse);
@@ -58,7 +58,7 @@ public class PersonController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("persons/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id) {
         log.info("delete() request = id {}, response = {}", id, HttpStatus.OK);
         personService.deleteById(id);
