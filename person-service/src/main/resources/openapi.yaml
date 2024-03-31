@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: "crud example"
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1/
+    description: Dev server
+paths:
+  /persons:
+    get:
+      summary: Метод полуычения списка персон
+      tags:
+        - Persons
+      operationId: getAllPersons
+      responses:
+        '200':
+          description: Успешный ответ со списком персон
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Persons"
+        'default':
+          description: Все нестандартные ошибки
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Метод создания персона
+      tags:
+        - Persons
+      operationId: createPerson
+      requestBody:
+        required: true
+        content:
+          application:json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        '200':
+          description: Успешный ответ с одним персоном
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        'default':
+          description: Все нестандартные ошибки
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /persons/{name}:
+    get:
+      summary: Метод получения персона по имени
+      tags:
+        - Persons
+      operationId: getPersonByName
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Имя персона
+          schema:
+            type: string
+          example: Petr
+      responses:
+        '200':
+          description: Успешный ответ с одним персоном
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        'default':
+          description: Все не стандартные ошибки
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /persons/{id}:
+    delete:
+      summary: Метод удаления персона по имени
+      tags:
+        - Persons
+      operationId: deletePersonById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор персона
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Успешное удаление
+          content:
+            application/json: {}
+        'default':
+          description: Все не стандартные ошибки
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Person:
+      type: object
+      required:
+        - name
+        - age
+      properties:
+        person_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Petr
+        age:
+          type: integer
+          example: 30
+        created_at:
+          type: string
+          format: 2024-03-18T15:00:00+01
+        updated_at:
+          type: string
+          format: 2024-03-18T15:00:00+01
+    Persons:
+      type: array
+      items:
+        $ref: "#/components/schemas/Person"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        name:
+          type: integer
+          example: 1
+        age:
+          type: string
+          example: Bad request
