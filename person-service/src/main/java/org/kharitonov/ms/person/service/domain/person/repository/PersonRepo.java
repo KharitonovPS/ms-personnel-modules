@@ -1,6 +1,6 @@
-package org.kharitonov.ms.person.service.repository;
+package org.kharitonov.ms.person.service.domain.person.repository;
 
-import org.kharitonov.ms.person.service.domain.Person;
+import org.kharitonov.ms.person.service.domain.person.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;

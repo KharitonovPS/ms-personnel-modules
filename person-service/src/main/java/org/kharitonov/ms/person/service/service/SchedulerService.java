@@ -2,7 +2,7 @@ package org.kharitonov.ms.person.service.service;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.kharitonov.ms.person.service.repository.PersonRepo;
+import org.kharitonov.ms.person.service.domain.person.repository.PersonRepo;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

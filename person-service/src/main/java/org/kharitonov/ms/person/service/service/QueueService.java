@@ -2,7 +2,7 @@ package org.kharitonov.ms.person.service.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
+import org.kharitonov.ms.person.service.domain.person.mapper.PersonDTOMapper;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Service;
 

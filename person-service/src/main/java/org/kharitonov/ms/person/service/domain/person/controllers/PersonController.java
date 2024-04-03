@@ -1,10 +1,10 @@
-package org.kharitonov.ms.person.service.controllers;
+package org.kharitonov.ms.person.service.domain.person.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kharitonov.ms.person.service.domain.PersonResponseDto;
-import org.kharitonov.ms.person.service.service.PersonService;
+import org.kharitonov.person.model.dto.PersonResponseDto;
+import org.kharitonov.ms.person.service.domain.person.service.PersonService;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/persons")
 @RequiredArgsConstructor
 public class PersonController {
 
     private final PersonService personService;
 
-    @GetMapping("/persons")
+    @GetMapping("")
     public Page<PersonDTO> getAll(Pageable pageable) {
         Page<PersonDTO> pageResponse = personService.getPages(pageable);
         log.info("getAll() request = {}, response = {}",
@@ -29,19 +29,15 @@ public class PersonController {
         return pageResponse;
     }
 
-    @GetMapping("persons/{name}")
+    @GetMapping("/like/{name}")
     public PersonDTO getByName(@PathVariable("name") String name) {
         PersonDTO singlePersonResponse = personService.getElementByName(name);
         log.info("getByName(): request = {}, response = {}", name, singlePersonResponse);
         return singlePersonResponse;
     }
 
-    @GetMapping("/v1/{name}")
-    public PersonResponseDto getLike(@PathVariable("name") String name) {
-        return personService.findLikeName(name);
-    }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid PersonDTO personDTO) {
         log.info("crete() request = {}, response = {}", personDTO, HttpStatus.CREATED);
         personService.addPersonToQueue(personDTO);
@@ -58,7 +54,7 @@ public class PersonController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("persons/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id) {
         log.info("delete() request = id {}, response = {}", id, HttpStatus.OK);
         personService.deleteById(id);

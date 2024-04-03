@@ -5,8 +5,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kharitonov.ms.person.service.domain.Person;
-import org.kharitonov.ms.person.service.mapper.PersonDTOMapper;
+import org.kharitonov.ms.person.service.domain.person.entity.Person;
+import org.kharitonov.ms.person.service.domain.person.mapper.PersonDTOMapper;
+import org.kharitonov.ms.person.service.domain.person.service.PersonService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

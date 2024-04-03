@@ -1,4 +1,4 @@
-package org.kharitonov.ms.person.service.controllers;
+package org.kharitonov.ms.person.service.domain.person.controllers;
 
 import org.kharitonov.ms.person.service.exceptions.PersonErrorResponse;
 import org.kharitonov.ms.person.service.exceptions.PersonNotFoundException;

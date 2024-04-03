@@ -1,0 +1,7 @@
+{"index": { "_index": "resumes"  } }
+{   "id": 2,  "title": "Resume junior java script developer", "text": "smal text about java script work and smt...", "personId": 2 }
+{"index": { "_index": "resumes"  } }
+{ "id": 3, "title": "Resume trainee c++ developer", "text": "no text about work and smt...", "personId": 3 }
+
+
+/_bulk

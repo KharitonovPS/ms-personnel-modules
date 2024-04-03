@@ -1,4 +1,4 @@
-package org.kharitonov.ms.person.service.domain;
+package org.kharitonov.ms.person.service.domain.person.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.lang.annotation.Documented;
 import java.time.LocalDateTime;
 
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(indexes = {@Index(name = "idx_name", columnList = "name", unique = true)})
+//@Document(indexName = "resume")
 public class Person {
 
     @Id
@@ -30,6 +32,9 @@ public class Person {
     @Min(value = 0, message = "Age should be greater than 0")
     @Max(value = 150, message = "Age must be less than or equal to 150")
     private int age;
+
+    @Max(value = 150, message = "Resume must be less than or equal to 10_000 chars")
+    private String resume;
 
 
     @Column(name = "created_at")
