@@ -43,7 +43,7 @@ public class PersonClientImpl implements PersonClient {
         return clientRequestHelper.deserializeList(response);
     }
 
-    public PersonDTO getPerson(String name) {
+    public PersonDTO findByName(String name) {
         HttpRequest request = clientRequestHelper
                 .createGetRequest(BASE_URI + "/", name);
         String response = clientRequestHelper
@@ -52,11 +52,8 @@ public class PersonClientImpl implements PersonClient {
         return clientRequestHelper.deserialize(response);
     }
 
-    public String addPerson(String name, int age)
+    public String create(PersonDTO personDTO)
             throws JsonProcessingException {
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setAge(age);
-        personDTO.setName(name);
         String personAsString = objectMapper
                 .writeValueAsString(personDTO);
         HttpRequest request = clientRequestHelper
@@ -73,12 +70,10 @@ public class PersonClientImpl implements PersonClient {
         return clientRequestHelper.sendRequest(request);
     }
 
-    public String updatePerson(String name, int age, int id)
+    public String updatePerson(PersonDTO personDTO)
             throws JsonProcessingException {
-        String url = BASE_URI + "/" + id;
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setName(name);
-        personDTO.setAge(age);
+        String url = BASE_URI + "/" + personDTO.getId();
+
         String personAsString = objectMapper
                 .writeValueAsString(personDTO);
 

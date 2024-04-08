@@ -38,7 +38,9 @@ public class QueueListener {
                     .stream()
                     .map(personDTOMapper::dtoToPerson)
                     .toList();
-            personService.saveAll(filterDuplicates(personList));
+            if (!personList.isEmpty()){
+                personService.saveAll(filterDuplicates(personList));
+            }
         } catch (Exception e) {
             log.error("read queue:", e);
         }

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kharitonov.ms.person.service.domain.person.entity.Person;
 import org.kharitonov.ms.person.service.domain.person.repository.PersonRepo;
@@ -19,7 +18,6 @@ import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,8 +40,10 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @BeforeEach
     void doIt() {
         personRepo.deleteAll();
-
-        log.info("Preloading " + personRepo.save(new Person("Alice", 25)));
+        //add constructor (super)id in persons
+        Person alice = new Person("Alice", 25);
+        alice.setId(null);
+        log.info("Preloading " + personRepo.save(alice));
         log.info("Preloading " + personRepo.save(new Person("Bob", 30)));
         log.info("Preloading " + personRepo.save(new Person("David", 28)));
         log.info("Preloading " + personRepo.save(new Person("Davis", 38)));
@@ -79,7 +79,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
 
     @Test
     public void personControllerFindByNameTest() {
-        PersonDTO personDTO = personClientImpl.getPerson("Alice");
+        PersonDTO personDTO = personClientImpl.findByName("Alice");
         assertEquals("Alice", personDTO.getName());
     }
 
@@ -87,7 +87,7 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     public void personControllerFindByNonExisingNameTest() {
         String randomName = RandomStringUtils.randomAlphabetic(7);
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClientImpl.getPerson(randomName)
+                () -> personClientImpl.findByName(randomName)
         );
         assertTrue(runtimeException.getMessage().contains("HTTP request failed"));
     }
@@ -95,71 +95,58 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @Test
     public void personControllerCreatePersonTest() throws JsonProcessingException, InterruptedException {
         String name = RandomStringUtils.randomAlphabetic(12);
-        String response = personClientImpl.addPerson(name, 11);
+        String response = personClientImpl.create(new PersonDTO(null, name, 12));
         log.info(response);
         Thread.sleep(6000);
         assertEquals(response, "\"CREATED\"");
         assertTrue(personRepo.findByName(name).isPresent());
-//        log.info(personRepo.findByName(name).toString());
     }
 
     @Test
     public void personControllerCreateNotValidPersonTest() {
         String longName = RandomStringUtils.randomAlphabetic(111);
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClientImpl.addPerson(longName, 1112)
+                () -> personClientImpl.create(new PersonDTO(null, longName, 1112))
         );
         assertTrue(runtimeException.getMessage().contains("\"status\":400"));
     }
 
-    // TODO Fix NoSuchElement No value present
     @Test
-    @Disabled
     public void personControllerDeleteTest() {
-        Long id = 1015L;
-        Optional<Person> person = personRepo.findById(id);
-        String response = personClientImpl.deletePerson(id);
-        assertFalse(personRepo.findByName(person.get().getName()).isPresent());
+        PersonDTO dto = personClientImpl.findByName("Alice");
+        String response = personClientImpl.deletePerson(dto.getId());
+        assertFalse(personRepo.findByName(dto.getName()).isPresent());
         assertEquals(response, "\"OK\"");
-        List<Person> resultlist = personRepo.findAll();
-        for (Person findedPerson : resultlist) {
-            log.info(findedPerson.getName());
-        }
     }
 
     @Test
     public void personControllerPutRequestTest() throws JsonProcessingException {
-        String response = personClientImpl.updatePerson("Sadik", 11, 6);
+        PersonDTO dto = personClientImpl.findByName("Alice");
+        var name = "updated";
+        String response = personClientImpl.updatePerson(new PersonDTO(dto.getId(), name, 15));
         assertEquals(response, "\"OK\"");
         List<Person> person = personRepo.findAll();
-        for (Person findedPerson : person) {
-            log.info(findedPerson.toString());
-        }
+        PersonDTO findAfterUpdate = personClientImpl.findByName(name);
+        assertEquals(findAfterUpdate.getName(), name);
     }
 
     @Test
     public void personControllerPutRequestNonValidParamTest() {
+        PersonDTO dto = personClientImpl.findByName("Alice");
         RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> personClientImpl.updatePerson("Sadik", 1111, 1));
+                () -> personClientImpl.updatePerson(new PersonDTO(dto.getId(), "sad", 11111111)));
         assertTrue(runtimeException.getMessage().contains("HTTP request failed"));
     }
 
     @SneakyThrows
     @Test
-    public void personControllerCreateWithHighLoad() throws JsonProcessingException {
+    public void personControllerCreateWithHQueue() throws JsonProcessingException {
         long size = 200;
         List<Person> personList = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            Person person = new Person();
-            person.setName("Test load " + i);
-            person.setAge(1);
-            personList.add(person);
+            personClientImpl.create(new PersonDTO(null, "Name" + i, 1));
         }
-        for (Person person : personList) {
-            personClientImpl.addPerson(person.getName(), 1);
-        }
-        System.out.println(personRepo.count());
         Thread.sleep(30000);
         assertEquals(size + 5, personRepo.count());
     }
@@ -167,24 +154,24 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @SneakyThrows
     @Test
     public void savePersonWithExistName() throws JsonProcessingException {
-        Person person = new Person("Same", 1);
-        Person person2 = new Person("Unique", 2);
-        Person person3 = new Person("Same", 3);
-        Person person4 = new Person("David", 4);
-        List<Person> personList = new ArrayList<>();
+        var name = "same";
+        PersonDTO person = new PersonDTO(null, name, 1);
+        PersonDTO person2 = new PersonDTO(null, "Unique", 2);
+        PersonDTO person3 = new PersonDTO(null, name, 3);
+        PersonDTO person4 = new PersonDTO(null, "David", 4);
+        List<PersonDTO> personList = new ArrayList<>();
         personList.add(person);
         personList.add(person2);
         personList.add(person3);
         personList.add(person4);
-        for (Person people : personList) {
+        for (PersonDTO people : personList) {
             try {
                 Thread.sleep(300);
-                personClientImpl.addPerson(people.getName(), people.getAge());
+                personClientImpl.create(people);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        System.out.println(personRepo.count());
         Thread.sleep(10000);
         assertEquals(7, personRepo.count());
     }

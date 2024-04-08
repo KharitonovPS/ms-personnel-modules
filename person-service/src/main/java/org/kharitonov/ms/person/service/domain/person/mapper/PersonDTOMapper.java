@@ -6,7 +6,10 @@ import org.kharitonov.ms.person.service.domain.person.entity.Person;
 import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+
+import static org.kharitonov.ms.person.service.domain.AuditMetadata.SYSTEM_USER;
 
 @Getter
 @Setter
@@ -29,7 +32,9 @@ public class PersonDTOMapper {
     }
 
     private void enrichPerson(Person person) {
-        person.setCreatedAt(LocalDateTime.now());
-        person.setUpdatedAt(LocalDateTime.now());
+        person.setCreatedAt(Instant.now());
+        person.setUpdatedAt(Instant.now());
+        person.setUpdatedBy(SYSTEM_USER);
+        person.setCreatedBy(SYSTEM_USER);
     }
 }

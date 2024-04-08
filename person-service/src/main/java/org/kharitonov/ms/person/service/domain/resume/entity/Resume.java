@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "resume_text")
+//@Document(indexName = "resume_text")
 public class Resume {
 
     //postman создать индекс

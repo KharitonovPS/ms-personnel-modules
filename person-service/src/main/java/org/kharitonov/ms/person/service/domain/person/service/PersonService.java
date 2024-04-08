@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,8 @@ public class PersonService {
             personRepo.findById(id).map(person -> {
                         person.setName(personDTO.getName());
                         person.setAge(personDTO.getAge());
-                        person.setUpdatedAt(LocalDateTime.now());
+                        person.setUpdatedAt(Instant.now());
+                        person.setUpdatedBy("user");
                         return personRepo.save(person);
                     }
             );
