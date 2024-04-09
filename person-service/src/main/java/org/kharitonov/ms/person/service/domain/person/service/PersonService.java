@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class PersonService {
         LinkedList<PersonDTO> result = new LinkedList<>(
                 personRepo.findByPage(incrementedLimit, offset))
                 .stream()
-                .map(personDTOMapper::personToDto)
+                .map(personDTOMapper::toDto)
                 .collect(Collectors.toCollection(LinkedList::new));
         if (result.size() == incrementedLimit) {
             result.removeLast();
@@ -79,7 +78,7 @@ public class PersonService {
         log.info(personPage.toString());
         List<PersonDTO> personDTOList = personPage
                 .stream()
-                .map(personDTOMapper::personToDto)
+                .map(personDTOMapper::toDto)
                 .toList();
         return new PageImpl<>(personDTOList);
     }
@@ -87,7 +86,7 @@ public class PersonService {
     public PersonDTO getElementByName(String name) {
         Person findPerson = personRepo.findByName(name)
                 .orElseThrow(() -> new PersonNotFoundException(name));
-        return personDTOMapper.personToDto(findPerson);
+        return personDTOMapper.toDto(findPerson);
     }
 
     public List<Person> findAllByName(List<String> names) {

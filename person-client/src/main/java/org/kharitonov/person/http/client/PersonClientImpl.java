@@ -1,10 +1,10 @@
 package org.kharitonov.person.http.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.kharitonov.person.http.client.util.ClientRequestHelper;
 import org.kharitonov.person.http.client.util.CustomPageImpl;
 import org.kharitonov.person.model.dto.PersonDTO;
@@ -20,9 +20,11 @@ public class PersonClientImpl implements PersonClient {
     private final ObjectMapper objectMapper;
     private ClientRequestHelper clientRequestHelper;
 
+    private static final String PERSON_API = "/api/v1/persons";
+
     public PersonClientImpl(int port, int timeoutSeconds) {
         this.objectMapper = new ObjectMapper();
-        this.BASE_URI = "http://localhost:" + port + "/persons";
+        this.BASE_URI = "http://localhost:" + port + PERSON_API;
         this.clientRequestHelper = new ClientRequestHelper(timeoutSeconds);
     }
 
@@ -45,15 +47,15 @@ public class PersonClientImpl implements PersonClient {
 
     public PersonDTO findByName(String name) {
         HttpRequest request = clientRequestHelper
-                .createGetRequest(BASE_URI + "/", name);
+                .createGetRequest(BASE_URI + "/like/", name);
         String response = clientRequestHelper
                 .sendRequest(request);
 
         return clientRequestHelper.deserialize(response);
     }
 
-    public String create(PersonDTO personDTO)
-            throws JsonProcessingException {
+    @SneakyThrows
+    public String create(PersonDTO personDTO) {
         String personAsString = objectMapper
                 .writeValueAsString(personDTO);
         HttpRequest request = clientRequestHelper
@@ -70,8 +72,8 @@ public class PersonClientImpl implements PersonClient {
         return clientRequestHelper.sendRequest(request);
     }
 
-    public String updatePerson(PersonDTO personDTO)
-            throws JsonProcessingException {
+    @SneakyThrows
+    public String updatePerson(PersonDTO personDTO) {
         String url = BASE_URI + "/" + personDTO.getId();
 
         String personAsString = objectMapper

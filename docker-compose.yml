@@ -52,10 +52,10 @@ services:
   logstash:
     image: logstash:8.13.0
     container_name: logstash-0
-    restart: always
+#    restart: always
     volumes:
-      - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf
+      - ./logstash/:/home/user/IdeaProjects/ms-personnel-modules/logstash2/
+    command: logstash -f /home/user/IdeaProjects/ms-personnel-modules/logstash2/
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     ports:

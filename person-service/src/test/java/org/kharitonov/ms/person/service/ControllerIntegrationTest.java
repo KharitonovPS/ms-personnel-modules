@@ -40,7 +40,6 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
     @BeforeEach
     void doIt() {
         personRepo.deleteAll();
-        //add constructor (super)id in persons
         Person alice = new Person("Alice", 25);
         alice.setId(null);
         log.info("Preloading " + personRepo.save(alice));
@@ -63,7 +62,8 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         PersonDTO testPerson = new PersonDTO();
         testPerson.setName("Alice");
         testPerson.setAge(25);
-        assertEquals(personDTOS.getContent().get(0), testPerson);
+        assertEquals(personDTOS.getContent().get(0).getName(), testPerson.getName());
+        assertEquals(personDTOS.getContent().get(0).getAge(), testPerson.getAge());
     }
 
     @Test
@@ -74,7 +74,8 @@ public class ControllerIntegrationTest extends AbstractIntegrationServiceTest {
         PersonDTO testPerson = new PersonDTO();
         testPerson.setName("David");
         testPerson.setAge(28);
-        assertEquals(personDTOS.getContent().get(0), testPerson);
+        assertEquals(personDTOS.getContent().get(0).getName(), testPerson.getName());
+        assertEquals(personDTOS.getContent().get(0).getAge(), testPerson.getAge());
     }
 
     @Test

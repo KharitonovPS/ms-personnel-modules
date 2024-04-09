@@ -7,7 +7,6 @@ import org.kharitonov.person.model.dto.PersonDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import static org.kharitonov.ms.person.service.domain.AuditMetadata.SYSTEM_USER;
 
@@ -16,16 +15,18 @@ import static org.kharitonov.ms.person.service.domain.AuditMetadata.SYSTEM_USER;
 @Component
 public class PersonDTOMapper {
 
-    public Person dtoToPerson(PersonDTO personDTO) {
+    public Person toPerson(PersonDTO personDTO) {
         Person person = new Person();
+        person.setId(personDTO.getId());
         person.setName(personDTO.getName());
         person.setAge(personDTO.getAge());
         enrichPerson(person);
         return person;
     }
 
-    public PersonDTO personToDto(Person person) {
+    public PersonDTO toDto(Person person) {
         PersonDTO personDTO = new PersonDTO();
+        personDTO.setId(person.getId());
         personDTO.setAge(person.getAge());
         personDTO.setName(person.getName());
         return personDTO;
