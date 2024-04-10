@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+#logs
+/tomcat
+/logstash/app_logs.log
+
 ### STS ###
 .apt_generated
 .classpath

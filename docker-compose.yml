@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    image: postgres:16.0-alpine3.18
+    image: postgres:16.2-alpine3.19
     container_name: postgres-0
     environment:
       POSTGRES_DB: person
@@ -10,6 +10,10 @@ services:
       PGDATA: /var/lib/postgresql/data
     volumes:
       - ./pg_data:/var/lib/postgresql/data
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://logstash-0:12201"
     ports:
       - "5433:5432"
     restart: unless-stopped
@@ -52,10 +56,10 @@ services:
   logstash:
     image: logstash:8.13.0
     container_name: logstash-0
-#    restart: always
+    restart: always
     volumes:
-      - ./logstash/:/home/user/IdeaProjects/ms-personnel-modules/logstash2/
-    command: logstash -f /home/user/IdeaProjects/ms-personnel-modules/logstash2/
+      - ./logstash/:/home/user/IdeaProjects/ms-personnel-modules/logstash/
+    command: logstash -f /home/user/IdeaProjects/ms-personnel-modules/logstash/logstash.conf
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     ports:
